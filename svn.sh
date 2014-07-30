@@ -156,7 +156,7 @@ SET_SVN_POST_COMMIT()
         do
             echo
             read -p "Type svn web dir: " svn_web_dir
-            if [ "`echo $svn_web_dir | grep '^/home/www/\w*'`" ]; then
+            if [ "`echo $svn_web_dir | grep '^/\w*'`" ]; then
                 if [ -s "$svn_web_dir" ]; then
                     #mv -rf $svn_web_dir $svn_web_dir-bak
                     CHECKOUT_WEB_DIR
