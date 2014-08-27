@@ -159,7 +159,7 @@ function InstallAxel()
           echo "axel-1.0b.tar.gz [found]"
         else
           echo "Error: axel-1.0b.tar.gz not found!!!download now......"
-          wget http://mirrors.boxcore.org/lnmp/axel-1.0b.tar.gz
+          wget http://mirrors.mianfeibang.cn/lnmp/axel-1.0b.tar.gz
         fi
         tar zxvf axel-1.0b.tar.gz
         cd axel-1.0b
@@ -182,35 +182,35 @@ function DownloadBasic()
       echo "php-5.3.28.tar.gz [found]"
     else
       echo "Error: php-5.3.28.tar.gz not found!!!download now......"
-      axel -n 10 http://mirrors.boxcore.org/lnmp/php-5.3.28.tar.gz
+      axel -n 10 http://mirrors.mianfeibang.cn/lnmp/php-5.3.28.tar.gz
     fi
 
     if [ -s mysql-5.5.35.tar.gz ]; then
       echo "mysql-5.5.35.tar.gz [found]"
     else
       echo "Error: mysql-5.5.35.tar.gz not found!!!download now......"
-      axel -n 10 http://mirrors.boxcore.org/lnmp/mysql-5.5.35.tar.gz
+      axel -n 10 http://mirrors.mianfeibang.cn/lnmp/mysql-5.5.35.tar.gz
     fi
 
     if [ -s nginx-1.4.4.tar.gz ]; then
       echo "nginx-1.4.4.tar.gz [found]"
       else
       echo "Error: nginx-1.4.4.tar.gz not found!!!download now......"
-      axel -n 10 http://mirrors.boxcore.org/lnmp/nginx-1.4.4.tar.gz
+      axel -n 10 http://mirrors.mianfeibang.cn/lnmp/nginx-1.4.4.tar.gz
     fi
 
     if [ -s conf.tar.gz ]; then
       echo "conf.tar.gz [found]"
       else
       echo "Error: conf.tar.gz not found!!!download now......"
-      axel -n 10 http://mirrors.boxcore.org/lnmp/conf.tar.gz
+      axel -n 10 http://mirrors.mianfeibang.cn/lnmp/conf.tar.gz
     fi
 
     if [ -s pcre-8.34.tar.gz ]; then
       echo "pcre-8.34.tar.gz [found]"
     else
       echo "Error: pcre-8.34.tar.gz not found!!!download now......"
-      wget -c http://mirrors.boxcore.org/lnmp/pcre-8.34.tar.gz
+      wget -c http://mirrors.mianfeibang.cn/lnmp/pcre-8.34.tar.gz
     fi
 
     echo $hr
@@ -224,84 +224,84 @@ function DownloadDependent()
     #   echo "autoconf-2.69.tar.gz [found]"
     # else
     #   echo "Error: autoconf-2.69.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.boxcore.org/lnmp/autoconf-2.69.tar.gz
+    #   wget -c http://mirrors.mianfeibang.cn/lnmp/autoconf-2.69.tar.gz
     # fi
 
     # if [ -s fontconfig-2.11.0.tar.gz ]; then
     #   echo "fontconfig-2.11.0.tar.gz [found]"
     # else
     #   echo "Error: fontconfig-2.11.0.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.boxcore.org/lnmp/fontconfig-2.11.0.tar.gz
+    #   wget -c http://mirrors.mianfeibang.cn/lnmp/fontconfig-2.11.0.tar.gz
     # fi
 
     # if [ -s freetype-2.5.3.tar.gz ]; then
     #   echo "freetype-2.5.3.tar.gz [found]"
     # else
     #   echo "Error: freetype-2.5.3.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.boxcore.org/lnmp/freetype-2.5.3.tar.gz
+    #   wget -c http://mirrors.mianfeibang.cn/lnmp/freetype-2.5.3.tar.gz
     # fi
 
     if [ -s gd-2.0.35.tar.gz ]; then
       echo "gd-2.0.35.tar.gz [found]"
     else
       echo "Error: gd-2.0.35.tar.gz not found!!!download now......"
-      wget -c http://mirrors.boxcore.org/lnmp/gd-2.0.35.tar.gz
+      wget -c http://mirrors.mianfeibang.cn/lnmp/gd-2.0.35.tar.gz
     fi
 
     if [ -s jpegsrc.v9a.tar.gz ]; then
       echo "jpegsrc.v9a.tar.gz [found]"
     else
       echo "Error: jpegsrc.v9a.tar.gz not found!!!download now......"
-      wget -c http://mirrors.boxcore.org/lnmp/jpegsrc.v9a.tar.gz
+      wget -c http://mirrors.mianfeibang.cn/lnmp/jpegsrc.v9a.tar.gz
     fi
 
     # if [ -s libiconv-1.14.tar.gz ]; then
     #   echo "libiconv-1.14.tar.gz [found]"
     # else
     #   echo "Error: libiconv-1.14.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.boxcore.org/lnmp/libiconv-1.14.tar.gz
+    #   wget -c http://mirrors.mianfeibang.cn/lnmp/libiconv-1.14.tar.gz
     # fi
 
     # if [ -s libmcrypt-2.5.8.tar.gz ]; then
     #   echo "libmcrypt-2.5.8.tar.gz [found]"
     # else
     #   echo "Error: libmcrypt-2.5.8.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.boxcore.org/lnmp/libmcrypt-2.5.8.tar.gz
+    #   wget -c http://mirrors.mianfeibang.cn/lnmp/libmcrypt-2.5.8.tar.gz
     # fi
 
     if [ -s libpng-1.6.2.tar.gz ]; then
       echo "libpng-1.6.2.tar.gz [found]"
     else
       echo "Error: libpng-1.6.2.tar.gz not found!!!download now......"
-      wget -c http://mirrors.boxcore.org/lnmp/libpng-1.6.2.tar.gz
+      wget -c http://mirrors.mianfeibang.cn/lnmp/libpng-1.6.2.tar.gz
     fi
 
     # if [ -s libxml2-2.9.1.tar.gz ]; then
     #   echo "libxml2-2.9.1.tar.gz [found]"
     # else
     #   echo "Error: libxml2-2.9.1.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.boxcore.org/lnmp/libxml2-2.9.1.tar.gz
+    #   wget -c http://mirrors.mianfeibang.cn/lnmp/libxml2-2.9.1.tar.gz
     # fi
 
     # if [ -s mcrypt-2.6.8.tar.gz ]; then
     #   echo "mcrypt-2.6.8.tar.gz [found]"
     # else
     #   echo "Error: mcrypt-2.6.8.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.boxcore.org/lnmp/mcrypt-2.6.8.tar.gz
+    #   wget -c http://mirrors.mianfeibang.cn/lnmp/mcrypt-2.6.8.tar.gz
     # fi
 
     # if [ -s mhash-0.9.9.9.tar.gz ]; then
     #   echo "mhash-0.9.9.9.tar.gz [found]"
     # else
     #   echo "Error: mhash-0.9.9.9.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.boxcore.org/lnmp/mhash-0.9.9.9.tar.gz
+    #   wget -c http://mirrors.mianfeibang.cn/lnmp/mhash-0.9.9.9.tar.gz
     # fi
 
     # if [ -s zlib-1.2.5.tar.gz ]; then
     #   echo "zlib-1.2.5.tar.gz [found]"
     # else
     #   echo "Error: zlib-1.2.5.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.boxcore.org/lnmp/zlib-1.2.5.tar.gz
+    #   wget -c http://mirrors.mianfeibang.cn/lnmp/zlib-1.2.5.tar.gz
     # fi
 }
 
