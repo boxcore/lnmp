@@ -154,11 +154,11 @@ function DownloadBasic()
     echo $hr
     cd $src_dir
 
-    if [ -s php-5.3.28.tar.gz ]; then
-      echo "php-5.3.28.tar.gz [found]"
+    if [ -s php-5.3.29.tar.gz ]; then
+      echo "php-5.3.29.tar.gz [found]"
     else
-      echo "Error: php-5.3.28.tar.gz not found!!!download now......"
-      axel -n 10 http://mirrors.mianfeibang.cn/lnmp/php-5.3.28.tar.gz
+      echo "Error: php-5.3.29.tar.gz not found!!!download now......"
+      axel -n 10 http://mirrors.mianfeibang.cn/lnmp/php-5.3.29.tar.gz
     fi
 
     if [ -s mysql-5.5.35.tar.gz ]; then
@@ -528,9 +528,9 @@ function InstallPHP5_3()
 
     # compiled php resource
     cd $src_dir
-    tar -zxf php-5.3.28.tar.gz
+    tar -zxf php-5.3.29.tar.gz
     rm -rf /usr/local/php*
-    cd php-5.3.28
+    cd php-5.3.29
 
     ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --enable-fpm --with-fpm-user=$LNMP_USER --with-fpm-group=$LNMP_USER --with-mysql=/usr/local/mysql --with-mysql-sock --with-pdo-mysql=/usr/local/mysql/bin/mysql --with-zlib  --with-libxml-dir --with-curl --with-xmlrpc --with-openssl --with-mhash  --with-pear --enable-mbstring --enable-sysvshm --enable-zip  --enable-soap --enable-sockets
     
