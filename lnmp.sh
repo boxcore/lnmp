@@ -37,30 +37,6 @@ cd src_dir
     echo "MySQL root password:$mysqlrootpwd"
     echo $hr
 
-# set install dependent method
-function ChooseDependentType()
-{
-    # echo $hr
-    # echo "You now have 2 options for your dependent setup."
-    # echo ""
-    # echo "1: Install Dependent By Yum"
-    # echo "2: Install Dependent By Compiled Resource"
-    # echo $hr
-    # echo -n "Enter your choice (1 or 2): ";
-    # read dependent_type
-
-    # if [ "$dependent_type" = "1" ]; then
-    #     export LNMP_DTYPE="1"
-    # elif [ "$dependent_type" = "2" ]; then
-    #     export LNMP_DTYPE="2"
-    # else
-    #     echo "You input a wrong number, please choose again!"
-    #     ChooseDependentType
-    # fi
-
-    export LNMP_DTYPE="1"
-}
-
 # set run nginx and php user
 function ChooseRunUser()
 {
@@ -555,14 +531,8 @@ function InstallPHP5_3()
     tar -zxf php-5.3.28.tar.gz
     rm -rf /usr/local/php*
     cd php-5.3.28
-    if [ "$LNMP_DTYPE" = "1" ]; then
-        #if use yum dependent
-        ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --enable-fpm --with-fpm-user=$LNMP_USER --with-fpm-group=$LNMP_USER --with-mysql=/usr/local/mysql --with-mysql-sock --with-pdo-mysql=/usr/local/mysql/bin/mysql --with-zlib  --with-libxml-dir --with-curl --with-xmlrpc --with-openssl --with-mhash  --with-pear --enable-mbstring --enable-sysvshm --enable-zip  --enable-soap --enable-sockets
-		# bug: configure: error: Cannot find php_pdo_driver.h.
-    else
-        #yum list installed|grep mcrypt
-        ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --enable-fpm --with-fpm-user=$LNMP_USER --with-fpm-group=$LNMP_USER --with-mysql=/usr/local/mysql --with-mysql-sock --with-pdo-mysql=/usr/local/mysql/bin/mysql --with-zlib --with-libxml-dir --with-curl --with-xmlrpc --with-openssl --with-mhash --with-mcrypt=/usr/local/libmcrytp --with-pear --enable-mbstring --enable-sysvshm --enable-zip  --enable-soap --enable-sockets
-    fi
+
+    ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --enable-fpm --with-fpm-user=$LNMP_USER --with-fpm-group=$LNMP_USER --with-mysql=/usr/local/mysql --with-mysql-sock --with-pdo-mysql=/usr/local/mysql/bin/mysql --with-zlib  --with-libxml-dir --with-curl --with-xmlrpc --with-openssl --with-mhash  --with-pear --enable-mbstring --enable-sysvshm --enable-zip  --enable-soap --enable-sockets
     
     make && make install
 
@@ -623,17 +593,11 @@ sed -i '/# another virtual host using mix of IP-, name-, and port-based configur
 
 cd $src_dir
 mkdir -pv logs
-ChooseDependentType
 ChooseRunUser
 
 InitInstall 2>&1 | tee -a logs/InitInstall-`date +%Y%m%d`.log
 DownloadBasic 2>&1 | tee -a logs/DownloadBasic-`date +%Y%m%d`.log
-if [[ "$LNMP_DTYPE" = "1" ]]; then
-    InstallDependentByYum 2>&1 | tee -a logs/InstallDependentByYum-`date +%Y%m%d`.log
-else
-    DownloadDependent 2>&1 | tee -a logs/DownloadDependent-`date +%Y%m%d`.log
-    InstallDependentByCompile 2>&1 | tee -a logs/InstallDependentByCompile-`date +%Y%m%d`.log
-fi
+InstallDependentByYum 2>&1 | tee -a logs/InstallDependentByYum-`date +%Y%m%d`.log
 InstallMYSQL5_5 2>&1 | tee -a logs/InstallMYSQL5_5-`date +%Y%m%d`.log
 InstallNginx_1_4 2>&1 | tee -a logs/InstallNginx_1_4-`date +%Y%m%d`.log
 InstallPHP5_3 2>&1 | tee -a logs/InstallPHP5_3-`date +%Y%m%d`.log
