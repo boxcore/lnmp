@@ -271,7 +271,6 @@ rm -f /tmp/mysql_sec_script
 echo "============================MySQL 5.5.35 install completed========================="
 }
 
-
 # install Nginx
 function InstallNginx_1_4()
 {

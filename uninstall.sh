@@ -86,4 +86,4 @@ do
         fi
 done
 
-[ "$uninstall_yn" == 'y' ] && Uninstall 
+[ "$uninstall_yn" == 'y' ] && Uninstall
