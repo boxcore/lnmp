@@ -4,6 +4,7 @@
 #Usage:       bash lnmp.sh
 #website:     lnmp.boxcore.org
 #Version:     0.1
+#Description: php-fpm and nginx run by www
 #########################################
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
@@ -19,10 +20,10 @@ echo $hr
 echo "Install LNMP v1.0 for CentOS"
 echo "A tool to auto-compile & install Nginx+MySQL+PHP on Linux For more information please visit http://lnmp.boxcore.org/"
 echo $hr
-# close var cur_dir now
-cur_dir=$(pwd)
+# close var root_dir now
+root_dir=$(pwd)
 mkdir src
-src_dir=$cur_dir/src
+src_dir=$root_dir/src
 cd src_dir
 
 #set mysql root password
@@ -38,32 +39,9 @@ cd src_dir
     echo $hr
 
 # set run nginx and php user
-function ChooseRunUser()
-{
-    # echo $hr
-    # echo "Which User you want to run php and nginx?"
-    # echo ""
-    # echo "www: install for servers product"
-    # echo "root: only u!"
-    # echo $hr
-    # echo -n "Enter your choice (www or root): ";
-    # read runuser
-
-    # if [ "$runuser" = "www" ]; then
-    #     export LNMP_USER="www"
-    #     groupadd www
-    #     useradd -s /sbin/nologin -g www www
-    # elif [ "$runuser" = "root" ]; then
-    #     export LNMP_USER="root"
-    # else
-    #     echo "You input a wrong user name, please choose again!"
-    #     ChooseRunUser
-    # fi
-
     export LNMP_USER="www"
     groupadd www
     useradd -s /sbin/nologin -g www www
-}
 
 function InitInstall()
 {
@@ -154,11 +132,11 @@ function DownloadBasic()
     echo $hr
     cd $src_dir
 
-    if [ -s php-5.3.29.tar.gz ]; then
-      echo "php-5.3.29.tar.gz [found]"
+    if [ -s php-5.3.28.tar.gz ]; then
+      echo "php-5.3.28.tar.gz [found]"
     else
-      echo "Error: php-5.3.29.tar.gz not found!!!download now......"
-      axel -n 10 http://mirrors.mianfeibang.cn/lnmp/php-5.3.29.tar.gz
+      echo "Error: php-5.3.28.tar.gz not found!!!download now......"
+      axel -n 10 http://mirrors.mianfeibang.cn/lnmp/php-5.3.28.tar.gz
     fi
 
     if [ -s mysql-5.5.35.tar.gz ]; then
@@ -192,101 +170,9 @@ function DownloadBasic()
     echo $hr
 }
 
-
-# download depandent
-function DownloadDependent()
-{
-    # if [ -s autoconf-2.69.tar.gz ]; then
-    #   echo "autoconf-2.69.tar.gz [found]"
-    # else
-    #   echo "Error: autoconf-2.69.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.mianfeibang.cn/lnmp/autoconf-2.69.tar.gz
-    # fi
-
-    # if [ -s fontconfig-2.11.0.tar.gz ]; then
-    #   echo "fontconfig-2.11.0.tar.gz [found]"
-    # else
-    #   echo "Error: fontconfig-2.11.0.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.mianfeibang.cn/lnmp/fontconfig-2.11.0.tar.gz
-    # fi
-
-    # if [ -s freetype-2.5.3.tar.gz ]; then
-    #   echo "freetype-2.5.3.tar.gz [found]"
-    # else
-    #   echo "Error: freetype-2.5.3.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.mianfeibang.cn/lnmp/freetype-2.5.3.tar.gz
-    # fi
-
-    if [ -s gd-2.0.35.tar.gz ]; then
-      echo "gd-2.0.35.tar.gz [found]"
-    else
-      echo "Error: gd-2.0.35.tar.gz not found!!!download now......"
-      wget -c http://mirrors.mianfeibang.cn/lnmp/gd-2.0.35.tar.gz
-    fi
-
-    if [ -s jpegsrc.v9a.tar.gz ]; then
-      echo "jpegsrc.v9a.tar.gz [found]"
-    else
-      echo "Error: jpegsrc.v9a.tar.gz not found!!!download now......"
-      wget -c http://mirrors.mianfeibang.cn/lnmp/jpegsrc.v9a.tar.gz
-    fi
-
-    # if [ -s libiconv-1.14.tar.gz ]; then
-    #   echo "libiconv-1.14.tar.gz [found]"
-    # else
-    #   echo "Error: libiconv-1.14.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.mianfeibang.cn/lnmp/libiconv-1.14.tar.gz
-    # fi
-
-    # if [ -s libmcrypt-2.5.8.tar.gz ]; then
-    #   echo "libmcrypt-2.5.8.tar.gz [found]"
-    # else
-    #   echo "Error: libmcrypt-2.5.8.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.mianfeibang.cn/lnmp/libmcrypt-2.5.8.tar.gz
-    # fi
-
-    if [ -s libpng-1.6.2.tar.gz ]; then
-      echo "libpng-1.6.2.tar.gz [found]"
-    else
-      echo "Error: libpng-1.6.2.tar.gz not found!!!download now......"
-      wget -c http://mirrors.mianfeibang.cn/lnmp/libpng-1.6.2.tar.gz
-    fi
-
-    # if [ -s libxml2-2.9.1.tar.gz ]; then
-    #   echo "libxml2-2.9.1.tar.gz [found]"
-    # else
-    #   echo "Error: libxml2-2.9.1.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.mianfeibang.cn/lnmp/libxml2-2.9.1.tar.gz
-    # fi
-
-    # if [ -s mcrypt-2.6.8.tar.gz ]; then
-    #   echo "mcrypt-2.6.8.tar.gz [found]"
-    # else
-    #   echo "Error: mcrypt-2.6.8.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.mianfeibang.cn/lnmp/mcrypt-2.6.8.tar.gz
-    # fi
-
-    # if [ -s mhash-0.9.9.9.tar.gz ]; then
-    #   echo "mhash-0.9.9.9.tar.gz [found]"
-    # else
-    #   echo "Error: mhash-0.9.9.9.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.mianfeibang.cn/lnmp/mhash-0.9.9.9.tar.gz
-    # fi
-
-    # if [ -s zlib-1.2.5.tar.gz ]; then
-    #   echo "zlib-1.2.5.tar.gz [found]"
-    # else
-    #   echo "Error: zlib-1.2.5.tar.gz not found!!!download now......"
-    #   wget -c http://mirrors.mianfeibang.cn/lnmp/zlib-1.2.5.tar.gz
-    # fi
-}
-
 # install dependent by yum
 function InstallDependentByYum()
 {
-    # for packages in patch cmake gcc-g77 flex bison file libtool libtool-libs autoconf kernel kernel-devel kernel-headers libjpeg libjpeg-devel libpng libpng-devel libpng10 libpng10-devel gd gd-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glib2 glib2-devel bzip2 bzip2-devel libevent libevent-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5 krb5-devel libidn libidn-devel openssl openssl-devel vim-minimal nano fonts-chinese gettext gettext-devel gmp-devel pspell-devel unzip libcap automake compat* cpp cloog-ppl ppl glibc jpegsrc keyutils keyutils-libs-devel libcom_err-devel libgomp libiconv libjpeg* libmcrypt libmcrypt-devel libsepol-devel libselinux-devel libXpm* libstdc++-devel mhash mpfr pcre-devel  perl php-gd php-common python-devel fontconfig cmake apr* ncurses ncurses-devel;
-    # do yum -y install $packages; done
-
     # for basic dependent
     yum -y install glibc zlib zlib-devel libjpeg libjpeg-devel jpegsrc libpng libpng-devel libpng10 libpng10-devel gd gd-devel freetype freetype-devel libxml2 libxml2-devel glib2 glib2-devel bzip2 bzip2-devel libevent libevent-devel curl curl-devel libidn libidn-devel openssl openssl-devel
     yum -y install unzip automake
@@ -295,93 +181,6 @@ function InstallDependentByYum()
     yum -y install autoconf automake libidn-devel curl curl-devel
     yum -y install libmcrypt libmcrypt-devel mcrypt mhash
     yum -y install libxml2 libxml2-devel
-
-}
-
-# install dependent
-function InstallDependentByCompile()
-{
-    cd $src_dir
-
-    # install zlib
-    echo $hr
-    echo "Install zlib"
-    echo $hr
-    tar zxvf zlib-1.2.5.tar.gz
-    cd zlib-1.2.5
-    ./configure
-    make && make install
-    cd ../
-
-    # install libpng
-    echo $hr
-    echo "Install libpng"
-    echo $hr
-    tar zxvf libpng-1.6.2.tar.gz
-    cd libpng-1.6.2
-    # cp scripts/makefile.linux ./makefile
-    # when have /usr/lcoal/zlib, then use it:
-    # sed -i 's:ZLIBLIB=../zlib:ZLIBLIB=/usr/local/zlib/lib:g' makefile
-    # sed -i 's:ZLIBINC=../zlib:ZLIBINC=/usr/local/zlib/include:g' makefile
-    ./configure --prefix=/usr/local/libpng
-    make && make install
-    cd ../
-
-    # install jpegsrc
-    echo $hr
-    echo "Install jpegsrc"
-    echo $hr
-    tar zxvf jpegsrc.v9a.tar.gz
-    cd jpeg-9a
-    mkdir -pv /usr/local/libjpeg/{,bin,lib,include,man/man1,man1}
-    ./configure --prefix=/usr/local/libjpeg --enable-shared --enable-static
-    make && make install
-    cd ../
-
-    # install libxml2
-    echo $hr
-    echo "Install libxml2(must install python-devel depand)"
-    echo $hr
-    yum -y install python-devel
-    tar zxvf libxml2-2.9.1.tar.gz
-    cd libxml2-2.9.1
-    ./configure --prefix=/usr/local/libxml2
-    make && make install
-    cp xml2-config /usr/bin/
-    cd ../
-
-    # install libmcrypt
-    echo $hr
-    echo "Install libmcrypt"
-    echo $hr
-    tar zxvf libmcrypt-2.5.8.tar.gz
-    cd libmcrypt-2.5.8
-    ./configure
-    make && make install
-    cd ../
-
-    # install gd
-    echo $hr
-    echo "Install gd2"
-    echo $hr
-    yum -y install freetype freetype-devel zlib-devel fontconfig fontconfig-devel  libXpm-devel
-    tar zxvf gd-2.0.35.tar.gz
-    cd gd-2.0.35
-    ./configure --prefix=/usr/local/libgd --with-png=/usr/local/libpng --with-jpeg=/usr/local/libjpeg --enable-libxml2
-    make && make install
-    cd ../
-
-# conf lib
-echo $hr
-echo "conf lib for ldconfig"
-echo $hr
-cat >>/etc/ld.so.conf<<eof
-/usr/local/zlib/lib
-/usr/local/libpng/lib
-/usr/local/libjpeg/lib
-/usr/local/libgd/lib
-eof
-ldconfig
 }
 
 # install MYSQL
@@ -490,7 +289,7 @@ ldconfig
 # install nginx
 tar zxvf nginx-1.4.4.tar.gz
 cd nginx-1.4.4/
-./configure --user=$LNMP_USER --group=$LNMP_USER --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-ipv6 --with-pcre
+./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-ipv6 --with-pcre
 make && make install
 cd ../
 
@@ -505,20 +304,12 @@ service nginx restart
 
 ln -s /usr/local/nginx/sbin/nginx /usr/bin/nginx
 
-#rm -f /usr/local/nginx/conf/nginx.conf
-#cd /root/lnmp
-#cp conf/nginx.conf /usr/local/nginx/conf/nginx.conf
-#cp conf/www-conf /home/www/conf
-
-if [[ "$LNMP_USER" = "www" ]]; then
-    cd $src_dir
-    mkdir -p /home/www/{default,logs,logs/nginx,logs/php}
-    touch /home/www/logs/nginx/error.log
-    chmod +w /home/www/default
-    chmod 777 /home/www/logs
-    chown -R www:www /home/www
-fi
-
+cd $src_dir
+mkdir -p /home/www/{default,logs,logs/nginx,logs/php}
+touch /home/www/logs/nginx/error.log
+chmod +w /home/www/default
+chmod 777 /home/www/logs
+chown -R www:www /home/www
 }
 
 function InstallPHP5_3()
@@ -528,11 +319,11 @@ function InstallPHP5_3()
 
     # compiled php resource
     cd $src_dir
-    tar -zxf php-5.3.29.tar.gz
+    tar -zxf php-5.3.28.tar.gz
     rm -rf /usr/local/php*
-    cd php-5.3.29
+    cd php-5.3.28
 
-    ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --enable-fpm --with-fpm-user=$LNMP_USER --with-fpm-group=$LNMP_USER --with-mysql=/usr/local/mysql --with-mysql-sock --with-pdo-mysql=/usr/local/mysql/bin/mysql --with-zlib  --with-libxml-dir --with-curl --with-xmlrpc --with-openssl --with-mhash  --with-pear --enable-mbstring --enable-sysvshm --enable-zip  --enable-soap --enable-sockets
+    ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --enable-fpm --with-fpm-user=www --with-fpm-group=www --with-mysql=/usr/local/mysql --with-mysql-sock --with-pdo-mysql=/usr/local/mysql/bin/mysql --with-zlib  --with-libxml-dir --with-curl --with-xmlrpc --with-openssl --with-mhash  --with-pear --enable-mbstring --enable-sysvshm --enable-zip  --enable-soap --enable-sockets
     
     make && make install
 
@@ -579,10 +370,10 @@ fi
 
 # modify nginx.conf for php
 cp /usr/local/nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.conf.org.bak
-sed -i "s:#user\s*nobody;:user $LNMP_USER $LNMP_USER;:g" /usr/local/nginx/conf/nginx.conf
+sed -i "s:#user\s*nobody;:user www www;:g" /usr/local/nginx/conf/nginx.conf
 sed -i '/# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000/a\location \~ \\.php\$ \{\nroot           html;\nfastcgi_pass   127.0.0.1:9000;\nfastcgi_index  index.php;\nfastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;\nfastcgi_param PATH_INFO $fastcgi_path_info;\nfastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;\nfastcgi_connect_timeout 60;\nfastcgi_send_timeout    180;\nfastcgi_read_timeout    180;\nfastcgi_buffer_size 128k;\nfastcgi_buffers 4 256k;\nfastcgi_busy_buffers_size 256k;\nfastcgi_temp_file_write_size 256k;\nfastcgi_intercept_errors on;\ninclude        fastcgi_params;\n\}\n' /usr/local/nginx/conf/nginx.conf
 
-cd $cur_dir
+cd $root_dir
 cp -rf conf/p.php /usr/local/nginx/html/p.php
 cp -rf conf/phpinfo.php /usr/local/nginx/html/phpinfo.php
 
@@ -593,7 +384,6 @@ sed -i '/# another virtual host using mix of IP-, name-, and port-based configur
 
 cd $src_dir
 mkdir -pv logs
-ChooseRunUser
 
 InitInstall 2>&1 | tee -a logs/InitInstall-`date +%Y%m%d`.log
 DownloadBasic 2>&1 | tee -a logs/DownloadBasic-`date +%Y%m%d`.log

@@ -2,6 +2,7 @@
 
 1. `BoxCore-LNMP` 是一款自动安装`LNMP`服务环境的一键部署工具，包含`Nginx`、`MySQL`和`PHP`
 2. 目前仅在CentOS 6.5 minimal 安装（32/64位均可）测试过
+3. php的依赖包均通过yum进行安装
 
 ## 二、安装和使用
 
@@ -11,7 +12,7 @@
 
 	yum -y install git
 	git clone https://github.com/boxcore/lnmp.git
-	cd lnmp && chmod 755 *.sh && ./lnmp.sh
+	cd lnmp && chmod 755 *.sh && dos2unix lnmp.sh && ./lnmp.sh
 
 ## 三、联系方式
 
