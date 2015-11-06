@@ -341,6 +341,9 @@ cp -rf /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf
 if [ -s /usr/lib/php/modules/gd.so ]; then
     sed -i '/;extension=php_zip.dll/a\extension=/usr/lib/php/modules/gd.so' /usr/local/php/etc/php.ini
 fi
+if [ -s /usr/lib64/php/modules/gd.so ]; then
+    sed -i '/;extension=php_zip.dll/a\extension=/usr/lib64/php/modules/gd.so' /usr/local/php/etc/php.ini
+fi
 # vi php-fpm.conf 
 # //一般配置的依据如下
 # ===============================================
