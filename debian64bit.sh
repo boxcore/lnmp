@@ -8,7 +8,7 @@ fi
 
 clear
 echo "========================================================================="
-echo "LNMP V0.3 for Debian/Ubuntu VPS ,  Written by Licess "
+echo "LNMP V0.3 for Debian/Ubuntu VPS 64bit ,  Written by Licess "
 echo "========================================================================="
 echo "A tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo "For more information please visit http://blog.licess.cn/lnmp/"
@@ -52,62 +52,29 @@ if [ "$1" != "--help" ]; then
 	echo "Press any key to start..."
 	char=`get_char`
 
-apt-get remove -y apache2
+apt-get remove -y remove httpd
 killall apache2
-apt-get update -y
-apt-get install -y build-essential
-apt-get install -y gcc
-apt-get install -y g++
-apt-get install -y ssh
-apt-get install -y automake
+apt-get update -y --force-yes
+
+apt-get install -y --force-yes build-essential
+
 apt-get install -y autoconf
-apt-get install -y make
-apt-get install -y re2c
-apt-get install -y wget
-apt-get install -y cron
-apt-get install -y bzip2
-apt-get install -y rcconf
-apt-get install -y flex
-apt-get install -y vim
-apt-get install -y bison
-apt-get install -y m4
-apt-get install -y awk
-apt-get install -y make
-apt-get install -y cpp
-apt-get install -y binutils
-apt-get install -y unzip
-apt-get install -y tar
-apt-get install -y libncurses5
-apt-get install -y libncurses5-dev
-apt-get install -y libtool
-apt-get install -y libpcre3
-apt-get install -y libpcrecpp0
-apt-get install -y libssl-dev
-apt-get install -y zlibc
-apt-get install -y openssl
-apt-get install -y libxml2-dev
-apt-get install -y libltdl3-dev
-apt-get install -y libmcrypt-dev
-apt-get install -y libmysqlclient15-dev
-apt-get install -y libbz2-dev
-apt-get install -y libpcre3-dev
-apt-get install -y libssl-dev
-apt-get install -y zlib1g-dev
-apt-get install -y libpng3
-apt-get install -y libfreetype6
-apt-get install -y libfreetype6-dev
-apt-get install -y libjpeg62 libjpeg62-dev
-apt-get install -y libpng12-0 libpng12-dev
-apt-get install -y libfreetype6 libfreetype6-dev
-apt-get install -y curl
-apt-get install -y libcurl3
-apt-get install -y libcurl3-dev
-apt-get install -y libcurl4-openssl-dev
-apt-get install -y libmhash2
-apt-get install -y libmhash-dev
-apt-get install -y libpq-dev
-apt-get install -y libpq5
-apt-get install -y locales
+
+apt-get install -y --force-yes gcc g++ ssh automake autoconf make re2c wget cron bzip2 rcconf flex vim bison m4 awk cpp binutils libncurses5 unzip tar libncurses5 libncurses5-dev
+
+apt-get install -y --force-yes libtool libpcre3 libpcrecpp0 libssl-dev zlibc openssl libxml2-dev libltdl3-dev libpcre3 libpcrecpp0 libssl-dev zlibc openssl libxml2-dev libltdl3-dev
+
+apt-get install -y --force-yes libmcrypt-dev libmysqlclient15-dev libbz2-dev libpcre3-dev libssl-dev zlib1g-dev zlib1g-dev libfreetype6 libfreetype6-dev
+
+apt-get install -y --force-yes libmysqlclient15-dev libbz2-dev libpcre3-dev libssl-dev zlib1g-dev libpng3 libfreetype6 libfreetype6-dev
+
+apt-get install -y --force-yes libjpeg62 libjpeg62-dev libpng12-0 libpng12-dev curl libcurl3 libcurl3-dev libcurl4-openssl-dev libmhash2 libmhash-dev
+
+apt-get install -y --force-yes libpng12-0 libpng12-dev libfreetype6 libfreetype6-dev curl libcurl3 libcurl3-dev libcurl4-openssl-dev libmhash2 libmhash-dev libpq-dev libpq5
+
+apt-get install -y --force-yes libfreetype6 libfreetype6-dev
+
+apt-get install -y --force-yes locales
 
 if [ -s php-5.2.10.tar.gz ]; then
   echo "php-5.2.10.tar.gz [found]"
@@ -158,6 +125,7 @@ if [ -s prober2.tar.gz ]; then
   wget -c http://soft.vpser.net/prober/prober2.tar.gz
 fi
 
+cd $cur_dir
 tar zxvf libiconv-1.13.tar.gz
 cd libiconv-1.13/
 ./configure --prefix=/usr/local/libiconv
@@ -165,15 +133,11 @@ make && make install
 cd ../
 
 # mysql
-apt-get install -y mysql-server
+apt-get install mysql-server
 update-rc.d -f mysql-ndb remove
 update-rc.d -f mysql-ndb-mgm remove
-/etc/init.d/mysql stop
-mv /etc/mysql/my.cnf /etc/mysql/my.cnf.bak
-cp $cur_dir/conf/my.cnf /etc/mysql/my.cnf
 
 # php
-cd $cur_dir
 tar zxvf php-5.2.10.tar.gz
 gzip -cd php-5.2.10-fpm-0.5.13.diff.gz | patch -d php-5.2.10 -p1
 cd php-5.2.10/
@@ -188,7 +152,6 @@ sed -i 's#output_buffering = Off#output_buffering = On#' /usr/local/php/etc/php.
 sed -i 's/post_max_size = 8M/post_max_size = 50M/g' /usr/local/php/etc/php.ini
 sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 50M/g' /usr/local/php/etc/php.ini
 sed -i 's/;date.timezone =/date.timezone = PRC/g' /usr/local/php/etc/php.ini
-
 
 if [ `uname -m` = 'x86_64' ]; then
         wget -c http://soft.vpser.net/web/zend/ZendOptimizer-3.3.9-linux-glibc23-x86_64.tar.gz
@@ -216,7 +179,6 @@ mkdir -p /home/wwwroot/logs
 chmod 777 /home/wwwroot/logs
 touch /home/wwwroot/logs/nginx_error.log
 
-cd $cur_dir
 chown -R www:www /home/wwwroot
 rm -f /usr/local/php/etc/php-fpm.conf
 cp conf/php-fpm.conf /usr/local/php/etc/php-fpm.conf
@@ -259,7 +221,6 @@ phpinfo();
 eof
 
 #phpmyadmin
-cd $cur_dir
 tar zxvf phpmyadmin.tar.gz
 mv phpmyadmin /home/wwwroot/
 
@@ -273,7 +234,7 @@ update-rc.d nginx.sh defaults
 
 clear
 echo "========================================================================="
-echo "LNMP V0.3 for Debian/Ubuntu VPS , Written by Licess "
+echo "LNMP V0.3 for Debian/Ubuntu VPS 64bit , Written by Licess "
 echo "========================================================================="
 echo ""
 echo "For more information please visit http://blog.licess.cn/lnmp/"
