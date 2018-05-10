@@ -9,7 +9,7 @@ if [ $(id -u) != "0" ]; then
 fi
 clear
 printf "=========================================================================\n"
-printf "Pureftpd for LNMP V0.7  ,  Written by Licess \n"
+printf "Pureftpd for LNMP V0.8  ,  Written by Licess \n"
 printf "=========================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install pureftpd for lnmp \n"
@@ -74,14 +74,14 @@ cur_dir=$(pwd)
 	char=`get_char`
 
 echo "Start download files..."
-wget -c http://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.30.tar.gz
+wget -c http://soft.vpser.net/ftp/pure-ftpd/pure-ftpd-1.0.35.tar.gz
 wget -c http://soft.vpser.net/ftp/pure-ftpd/User_manager_for-PureFTPd_v2.1_CN.zip
 
 cp /usr/local/mysql/lib/mysql/*.* /usr/lib/
 
 echo "Start install pure-ftpd..."
-tar zxvf pure-ftpd-1.0.30.tar.gz
-cd pure-ftpd-1.0.30/
+tar zxvf pure-ftpd-1.0.35.tar.gz
+cd pure-ftpd-1.0.35/
 ./configure --prefix=/usr/local/pureftpd CFLAGS=-O2 \
 --with-mysql=/usr/local/mysql \
 --with-quotas \
@@ -117,7 +117,7 @@ sed -i 's/ftpmanagerpwd/'$ftpmanagerpwd'/g' /tmp/script.mysql
 echo "Import pureftpd database..."
 /usr/local/mysql/bin/mysql -u root -p$mysqlrootpwd -h localhost < /tmp/script.mysql
 
-rm /tmp/script.mysql
+rm -f /tmp/script.mysql
 
 echo "Install GUI User manager for PureFTPd..."
 cd $cur_dir
@@ -130,6 +130,7 @@ echo "Modify parameters of GUI User manager for PureFTPd..."
 sed -i 's/English/Chinese/g' /home/wwwroot/ftp/config.php
 sed -i 's/tmppasswd/'$mysqlftppwd'/g' /home/wwwroot/ftp/config.php
 sed -i 's/myipaddress.com/127.0.0.1/g' /home/wwwroot/ftp/config.php
+mv /home/wwwroot/ftp/install.php /home/wwwroot/ftp/install.php.bak
 
 cd $cur_dir
 cp pureftpd /root/pureftpd
@@ -157,7 +158,7 @@ printf "Now you enter http://youdomain.com/ftp/ in you Web Browser to manager FT
 printf "Your password of User manager was:$ftpmanagerpwd\n"
 printf "Your password of mysql ftp user was:$mysqlftppwd\n"
 printf "=======================================================================\n"
-printf "Install Pure-FTPd for LNMP V0.7  ,  Written by Licess \n"
+printf "Install Pure-FTPd for LNMP V0.8  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install Pure-FTPd for lnmp \n"

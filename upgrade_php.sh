@@ -62,8 +62,7 @@ if [ -s php-$php_version.tar.gz ]; then
   else
   echo "Error: php-$php_version.tar.gz not found!!!download now......"
   wget -c http://us2.php.net/distributions/php-$php_version.tar.gz
-  dl_status=`echo $?`
-  if [ $dl_status = "0" ]; then
+  if [ $? -eq 0 ]; then
 	echo "Download php-$php_version.tar.gz successfully!"
   else
 	echo "WARNING!May be the php version you input was wrong,please check!"
@@ -114,6 +113,8 @@ export PHP_AUTOHEADER=/usr/local/autoconf-2.13/bin/autoheader
 tar zxvf php-$php_version.tar.gz
 gzip -cd php-$php_version-fpm-0.5.14.diff.gz | patch -d php-$php_version -p1
 cd php-$php_version/
+wget -c http://soft.vpser.net/web/php/bug/php-5.2.17-max-input-vars.patch
+patch -p1 < php-5.2.17-max-input-vars.patch
 ./buildconf --force
 ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-fastcgi --enable-fpm --enable-force-cgi-redirect --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic
 

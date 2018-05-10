@@ -16,9 +16,9 @@ LNMP官网：http://lnmp.org
 安装
 ____
 
-wget -c http://soft.vpser.net/lnmp/lnmp0.7.tar.gz
-tar zxvf lnmp0.7.tar.gz
-cd lnmp0.7/
+wget -c http://soft.vpser.net/lnmp/lnmp0.8.tar.gz
+tar zxvf lnmp0.8.tar.gz
+cd lnmp0.8/
 
 CentOS/RadHat执行：
 ./centos.sh

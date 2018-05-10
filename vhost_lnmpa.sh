@@ -8,7 +8,7 @@ fi
 
 clear
 echo "========================================================================="
-echo "Add Virtual Host for LNMPA V0.7  ,  Written by Licess "
+echo "Add Virtual Host for LNMPA V0.8  ,  Written by Licess "
 echo "========================================================================="
 echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP+Apache on Linux "
 echo "This script is a tool to add virtual host for Nginx And Apache "
@@ -186,7 +186,7 @@ echo "Restart Apache......"
 /etc/init.d/httpd restart
 
 echo "========================================================================="
-echo "Add Virtual Host for LNMP V0.7  ,  Written by Licess "
+echo "Add Virtual Host for LNMP V0.8  ,  Written by Licess "
 echo "========================================================================="
 echo "For more information please visit http://www.lnmp.org/"
 echo ""

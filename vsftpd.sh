@@ -8,7 +8,7 @@ fi
 
 clear
 echo "========================================================================="
-echo "Vsftpd for LNMP V0.7  ,  Written by Licess "
+echo "Vsftpd for LNMP V0.8  ,  Written by Licess "
 echo "========================================================================="
 echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo "This script is a tool to install VSftp for LNMP "
@@ -55,16 +55,18 @@ mkdir -p /usr/share/empty
 
 /usr/local/sbin/vsftpd &
 setsebool -P ftpd_disable_trans on
+if [ -s /sbin/iptables ]; then
 /sbin/iptables -I INPUT -p tcp --dport 21 -j ACCEPT
-/etc/rc.d/init.d/iptables save
+/sbin/iptables-save
 /etc/init.d/iptables restart
+fi
 useradd -d /home/wwwroot -s /sbin/nologin adminftp
 pkill vsftpd
 /usr/local/sbin/vsftpd &
 
 clear
 echo "========================================================================="
-echo "Vsftpd for LNMP V0.7  ,  Written by Licess "
+echo "Vsftpd for LNMP V0.8  ,  Written by Licess "
 echo "========================================================================="
 echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo "This script is a tool to install VSftp for LNMP "

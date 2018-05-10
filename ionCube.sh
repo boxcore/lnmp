@@ -10,7 +10,7 @@ fi
 
 clear
 printf "=======================================================================\n"
-printf "Install ionCube for LNMP V0.7  ,  Written by Licess \n"
+printf "Install ionCube for LNMP V0.8  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install eAccelerator for lnmp \n"
@@ -87,7 +87,7 @@ printf "===================== install ionCube completed ===================\n"
 clear
 printf "Install ionCube completed,enjoy it!\n"
 printf "=======================================================================\n"
-printf "Install ionCube for LNMP V0.7  ,  Written by Licess \n"
+printf "Install ionCube for LNMP V0.8  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install eAccelerator for lnmp \n"

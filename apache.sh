@@ -10,7 +10,7 @@ fi
 
 clear
 printf "=======================================================================\n"
-printf "Install Apache for LNMP V0.7  ,  Written by Licess \n"
+printf "Install Apache for LNMP V0.8  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install Apache for lnmp \n"
@@ -148,6 +148,8 @@ rm -rf php-5.2.17
 fi
 tar zxvf php-5.2.17.tar.gz
 cd php-5.2.17/
+wget -c http://soft.vpser.net/web/php/bug/php-5.2.17-max-input-vars.patch
+patch -p1 < php-5.2.17-max-input-vars.patch
 ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-apxs2=/usr/local/apache/bin/apxs --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic
 
 rm -rf libtool

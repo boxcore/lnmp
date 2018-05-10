@@ -60,8 +60,7 @@ if [ -s nginx-$nginx_version.tar.gz ]; then
   else
   echo "Error: nginx-$nginx_version.tar.gz not found!!!download now......"
   wget -c http://nginx.org/download/nginx-$nginx_version.tar.gz
-  dl_status=`echo $?`
-  if [ $dl_status = "0" ]; then
+  if [ $? -eq 0 ]; then
 	echo "Download nginx-$nginx_version.tar.gz successfully!"
   else
 	echo "WARNING!May be the nginx version you input was wrong,please check!"

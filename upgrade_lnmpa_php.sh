@@ -64,6 +64,14 @@ if [ -s php-$php_version.tar.gz ]; then
   else
   echo "Error: php-$php_version.tar.gz not found!!!download now......"
   wget -c http://us2.php.net/distributions/php-$php_version.tar.gz
+  if [ $? -eq 0 ]; then
+	echo "Download php-$php_version.tar.gz successfully!"
+  else
+	echo "WARNING!May be the php version you input was wrong,please check!"
+	echo "PHP Version input was:"$php_version
+	sleep 5
+	exit 1
+  fi
 fi
 echo "============================check files=================================="
 
