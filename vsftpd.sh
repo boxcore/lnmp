@@ -31,7 +31,7 @@ echo ""
 	char=`get_char`
 
 wget -c http://soft.vpser.net/ftp/vsftpd/vsftpd-2.2.2.tar.gz
-echo "download vsftpd package finished!"
+echo "download vsftpd package completed!"
 echo "installing vsftpd 2.2.2......."
 
 useradd nobody

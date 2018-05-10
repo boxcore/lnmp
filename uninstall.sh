@@ -8,17 +8,13 @@ fi
 
 clear
 echo "========================================================================="
-echo "LNMP V0.4 for CentOS/RadHat Linux VPS  Written by Licess"
+echo "LNMP V0.5 for CentOS/RadHat Linux VPS  Written by Licess"
 echo "========================================================================="
 echo "A tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo ""
 echo "For more information please visit http:/www.lnmp.org/"
 echo ""
-echo "The path of some dirs:"
-echo "mysql dir:   /usr/local/mysql"
-echo "php dir:     /usr/local/php"
-echo "nginx dir:   /usr/local/nginx"
-echo "web dir      /home/wwwroot"
+echo "Please backup your mysql data and configure files first!!!!!"
 echo ""
 echo "========================================================================="
 
@@ -39,19 +35,25 @@ echo "Please backup your mysql data!!!!!"
 	echo "Press any key to start uninstall LNMP , please wait ......"
 	char=`get_char`
 
-cd php-5.2.10/
-make uninstall
+killall nginx
+/etc/init.d/mysql stop
+killall mysqld
+/usr/local/php/sbin/php-fpm stop
+killall php-cgi
+
 rm -rf /usr/local/php
 
-cd nginx-0.7.65/
-make uninstall
 rm -rf /usr/local/nginx
 
-cd mysql-5.1.44/
-make uninstall
 rm -rf /usr/local/mysql
 
 rm -rf /usr/local/zend
+
+rm /etc/my.cnf
+rm /etc/init.d/mysql
+rm /root/vhost.sh
+rm /root/lnmp
+rm /root/run.sh
 
 echo "Lnmp Uninstall completed."
 

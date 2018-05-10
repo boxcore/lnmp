@@ -8,7 +8,7 @@ fi
 
 clear
 echo "========================================================================="
-echo "Add Virtual Host for LNMP V0.4  ,  Written by Licess "
+echo "Add Virtual Host for LNMP V0.5  ,  Written by Licess "
 echo "========================================================================="
 echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo "This script is a tool to add virtual host for nginx "
@@ -94,7 +94,7 @@ if [ "$1" != "--help" ]; then
 	  al="log_format  $al_name  '\$remote_addr - \$remote_user [\$time_local] "\$request" '
              '\$status \$body_bytes_sent "\$http_referer" '
              '"\$http_user_agent" \$http_x_forwarded_for';
-		access_log  $al_name.log  $al_name;"
+		access_log  /home/wwwlogs/$al_name.log  $al_name;"
 	fi
 	echo "==========================="
 	echo You access log file="$al_name.log"
@@ -121,6 +121,7 @@ fi
 
 echo "Create Virtul Host directory......"
 mkdir -p $vhostdir
+touch /home/wwwlogs/$al_name.log
 echo "set permissions of Virtual Host directory......"
 chmod -R 755 $vhostdir
 chown -R www:www $vhostdir
@@ -170,7 +171,7 @@ echo "Restart Nginx......"
 kill -HUP `cat /usr/local/nginx/logs/nginx.pid`
 
 echo "========================================================================="
-echo "Add Virtual Host for LNMP V0.4  ,  Written by Licess "
+echo "Add Virtual Host for LNMP V0.5  ,  Written by Licess "
 echo "========================================================================="
 echo "For more information please visit http://www.lnmp.org/"
 echo ""

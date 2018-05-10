@@ -79,7 +79,7 @@ cp pureftpd /root/pureftpd
 chmod +x /root/pureftpd
 
 clear
-printf "Install Pure-FTPd finished,enjoy it!\n"
+printf "Install Pure-FTPd completed,enjoy it!\n"
 printf "Now you must enter http://youdomain.com/ftp/install.php in you Web Browser to install User manager for PureFTPd\n"
 printf "=======================================================================\n"
 printf "Install Pure-FTPd for LNMP V0.4  ,  Written by Licess \n"

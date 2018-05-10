@@ -10,7 +10,7 @@ fi
 
 clear
 printf "=======================================================================\n"
-printf "Install eAcesselerator for LNMP V0.5  ,  Written by Licess \n"
+printf "Install ionCube for LNMP V0.5  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install eAccelerator for lnmp \n"
@@ -30,55 +30,40 @@ cur_dir=$(pwd)
 	stty $SAVEDSTTY
 	}
 	echo ""
-	echo "Press any key to start install eAccelerator..."
+	echo "Press any key to start install ionCube..."
 	char=`get_char`
 
 printf "=========================== install eaccelerator ======================\n"
 
-wget -c http://soft.vpser.net/web/eaccelerator/eaccelerator-0.9.5.3.tar.bz2
-tar jxvf eaccelerator-0.9.5.3.tar.bz2
-cd eaccelerator-0.9.5.3/
-/usr/local/php/bin/phpize
-./configure --enable-eaccelerator=shared --with-php-config=/usr/local/php/bin/php-config --with-eaccelerator-shared-memory
-make
-make install
-cd ../
+if [ `getconf WORD_BIT` = '32' ] && [ `getconf LONG_BIT` = '64' ] ; then
+        cd /usr/local/
+	wget -c http://downloads2.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
+	tar zxvf ioncube_loaders_lin_x86-64.tar.gz
+else
+        cd /usr/local/
+	wget -c http://downloads2.ioncube.com/loader_downloads/ioncube_loaders_lin_x86.tar.gz
+	tar zxvf ioncube_loaders_lin_x86.tar.gz
+fi
 
-mkdir -p /usr/local/eaccelerator_cache
-cat >>ea.ini<<EOF
-[eaccelerator]
-zend_extension="/usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/eaccelerator.so"
-eaccelerator.shm_size="1"
-eaccelerator.cache_dir="/usr/local/eaccelerator_cache"
-eaccelerator.enable="1"
-eaccelerator.optimizer="1"
-eaccelerator.check_mtime="1"
-eaccelerator.debug="0"
-eaccelerator.filter=""
-eaccelerator.shm_max="0"
-eaccelerator.shm_ttl="3600"
-eaccelerator.shm_prune_period="3600"
-eaccelerator.shm_only="0"
-eaccelerator.compress="1"
-eaccelerator.compress_level="9"
-eaccelerator.keys = "disk_only"
-eaccelerator.sessions = "disk_only"
-eaccelerator.content = "disk_only"
+
+cat >>ionCube.ini<<EOF
+[ionCube Loader]
+zend_extension="/usr/local/ioncube/ioncube_loader_lin_5.2.so"
 EOF
 
-sed -i '/;eaccelerator/ {
-r ea.ini
+sed -i '/;ionCube/ {
+r ionCube.ini
 }' /usr/local/php/etc/php.ini
 
-echo "Reload php-fpm"
+echo "Reload php-fpm......"
 /usr/local/php/sbin/php-fpm reload
 
-printf "===================== install eaccelerator completed ===================\n"
+printf "===================== install ionCube completed ===================\n"
 
 clear
-printf "Install eAccelerator completed,enjoy it!"
+printf "Install ionCube completed,enjoy it!"
 printf "=======================================================================\n"
-printf "Install eAcesselerator for LNMP V0.5  ,  Written by Licess \n"
+printf "Install ionCube for LNMP V0.5  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install eAccelerator for lnmp \n"

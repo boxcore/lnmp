@@ -9,7 +9,7 @@ if [ $(id -u) != "0" ]; then
 fi
 
 printf "=========================================================================\n"
-printf "Manager for LNMP V0.4  ,  Written by Licess \n"
+printf "Manager for LNMP V0.5  ,  Written by Licess \n"
 printf "=========================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to Manage status of lnmp \n"
@@ -29,7 +29,7 @@ function_start()
       exit 1
     else  
         $NGINXDAEMON 
-        printf "Nginx is the successful start!\n"
+        printf "Nginx is successful start!\n"
     fi
     /usr/local/php/sbin/php-fpm start
     /etc/init.d/mysql start
@@ -40,7 +40,7 @@ function_stop()
     printf "Stoping LNMP...\n"
     if  [ -f $PIDFILE ]; then
         kill `cat $PIDFILE`
-        printf "Nginx program is stoping\n"
+        printf "Nginx program is stop\n"
     else  
         printf "Nginx program is not runing!\n" 
     fi
@@ -79,13 +79,13 @@ function_kill()
 
 function_status()
 {
-    if ! ps -ef|grep 'nginx:' > /dev/null 2>&1
-    then
-        printf "Nginx is down!!!\n"
+    if [ -f $PIDFILE ]; then
+      printf "Nginx is runing!\n"
     else
-	printf "Nginx is running now!\n"
+	printf "Nginx is stop!\n"
     fi
-    /etc/init.d/mysql status
+
+/etc/init.d/mysql status
 }
 
 if [ "$1" = "start" ]; then
