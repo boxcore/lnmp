@@ -14,7 +14,7 @@ Install_PHPMemcache()
     fi
     ${PHP_Path}/bin/phpize
     ./configure --with-php-config=${PHP_Path}/bin/php-config
-    make && make install
+    Make_Install
     cd ../
 }
 
@@ -37,7 +37,7 @@ Install_PHPMemcached()
     Download_Files ${Download_Mirror}/web/libmemcached/${Libmemcached_Ver}.tar.gz
     Tar_Cd ${Libmemcached_Ver}.tar.gz ${Libmemcached_Ver}
     ./configure --prefix=/usr/local/libmemcached --with-memcached
-    make && make install
+    Make_Install
     cd ../
 
     cd ${cur_dir}/src
@@ -50,7 +50,7 @@ Install_PHPMemcached()
     fi
     ${PHP_Path}/bin/phpize
     ./configure --with-php-config=${PHP_Path}/bin/php-config --enable-memcached --with-libmemcached-dir=/usr/local/libmemcached
-    make && make install
+    Make_Install
     cd ../
 }
 
@@ -125,12 +125,14 @@ EOF
     Restart_PHP
 
     if [ -s /sbin/iptables ]; then
-        /sbin/iptables -A INPUT -p tcp --dport 11211 -j DROP
-        /sbin/iptables -A INPUT -p udp --dport 11211 -j DROP
-        if [ "$PM" = "yum" ]; then
-            service iptables save
-        elif [ "$PM" = "apt" ]; then
-            iptables-save > /etc/iptables.rules
+        if /sbin/iptables -C INPUT -i lo -j ACCEPT; then
+            /sbin/iptables -A INPUT -p tcp --dport 11211 -j DROP
+            /sbin/iptables -A INPUT -p udp --dport 11211 -j DROP
+            if [ "$PM" = "yum" ]; then
+                service iptables save
+            elif [ "$PM" = "apt" ]; then
+                iptables-save > /etc/iptables.rules
+            fi
         fi
     fi
 

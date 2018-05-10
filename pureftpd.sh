@@ -32,10 +32,12 @@ Install_Pureftpd()
 
     Echo_Blue "Installing dependent packages..."
     if [ "$PM" = "yum" ]; then
-        yum -y install make gcc gcc-c++ gcc-g77 openssl openssl-devel
+        for packages in make gcc gcc-c++ gcc-g77 openssl openssl-devel bzip2;
+        do yum -y install $packages; done
     elif [ "$PM" = "apt" ]; then
         apt-get update -y
-        apt-get install -y build-essential gcc g++ make openssl libssl-dev
+        for packages in build-essential gcc g++ make openssl libssl-dev bzip2;
+        do apt-get --no-install-recommends install -y $packages; done
     fi
     Echo_Blue "Download files..."
     cd ${cur_dir}/src
@@ -50,7 +52,7 @@ Install_Pureftpd()
     Tarj_Cd ${Pureftpd_Ver}.tar.bz2 ${Pureftpd_Ver}
     ./configure --prefix=/usr/local/pureftpd CFLAGS=-O2 --with-puredb --with-quotas --with-cookie --with-virtualhosts --with-diraliases --with-sysquotas --with-ratios --with-altlog --with-paranoidmsg --with-shadow --with-welcomemsg --with-throttling --with-uploadscript --with-language=english --with-rfc2640 --with-ftpwho --with-tls
 
-    make && make install
+    Make_Install
 
     Echo_Blue "Copy configure files..."
     mkdir /usr/local/pureftpd/etc

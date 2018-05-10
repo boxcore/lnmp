@@ -41,6 +41,18 @@ Dele_Iptables_Rules()
     /sbin/iptables -D INPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
 }
 
+Sleep_Sec()
+{
+    seconds=$1
+    while [ "${seconds}" -ge "0" ];do
+      echo -ne "\r     \r"
+      echo -n ${seconds}
+      seconds=$(($seconds - 1))
+      sleep 1
+    done
+    echo -ne "\r"
+}
+
 Uninstall_LNMP()
 {
     echo "Stoping LNMP..."
@@ -85,6 +97,11 @@ Uninstall_LNMP()
         fi
     done
 
+    if [ -s /usr/local/acme.sh/acme.sh ]; then
+        /usr/local/acme.sh/acme.sh --uninstall
+        rm -rf /usr/local/acme.sh
+    fi
+
     rm -f /etc/init.d/nginx
     rm -f /etc/init.d/php-fpm
     rm -f /bin/lnmp
@@ -123,6 +140,11 @@ Uninstall_LNMPA()
         rm -f /etc/init.d/${DB_Name}
     fi
 
+    if [ -s /usr/local/acme.sh/acme.sh ]; then
+        /usr/local/acme.sh/acme.sh --uninstall
+        rm -rf /usr/local/acme.sh
+    fi
+
     rm -f /etc/init.d/nginx
     rm -f /etc/init.d/httpd
     rm -f /bin/lnmp
@@ -159,6 +181,11 @@ Uninstall_LAMP()
         rm -f /etc/init.d/${DB_Name}
     fi
 
+    if [ -s /usr/local/acme.sh/acme.sh ]; then
+        /usr/local/acme.sh/acme.sh --uninstall
+        rm -rf /usr/local/acme.sh
+    fi
+
     rm -f /etc/my.cnf
     rm -f /etc/init.d/httpd
     rm -f /bin/lnmp
@@ -190,7 +217,7 @@ ${MySQL_Dir}
 /etc/my.cnf
 /bin/lnmp
 EOF
-        sleep 3
+        Sleep_Sec 3
         Press_Start
         Uninstall_LNMP
     ;;
@@ -210,7 +237,7 @@ ${MySQL_Dir}
 /etc/my.cnf
 /bin/lnmp
 EOF
-        sleep 3
+        Sleep_Sec 3
         Press_Start
         Uninstall_LNMPA
     ;;
@@ -228,7 +255,7 @@ ${MySQL_Dir}
 /etc/my.cnf
 /bin/lnmp
 EOF
-        sleep 3
+        Sleep_Sec 3
         Press_Start
         Uninstall_LAMP
     ;;

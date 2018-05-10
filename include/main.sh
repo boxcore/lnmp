@@ -1,23 +1,27 @@
 #!/bin/bash
 
-DB_Info=('MySQL 5.1.73' 'MySQL 5.5.56' 'MySQL 5.6.36' 'MySQL 5.7.18' 'MariaDB 5.5.56' 'MariaDB 10.0.30' 'MariaDB 10.1.23')
-PHP_Info=('PHP 5.2.17' 'PHP 5.3.29' 'PHP 5.4.45' 'PHP 5.5.38' 'PHP 5.6.31' 'PHP 7.0.21' 'PHP 7.1.7')
-Apache_Info=('Apache 2.2.34' 'Apache 2.4.27')
+DB_Info=('MySQL 5.1.73' 'MySQL 5.5.60' 'MySQL 5.6.40' 'MySQL 5.7.22' 'MySQL 8.0.11' 'MariaDB 5.5.59' 'MariaDB 10.0.34' 'MariaDB 10.1.32' 'MariaDB 10.2.14')
+PHP_Info=('PHP 5.2.17' 'PHP 5.3.29' 'PHP 5.4.45' 'PHP 5.5.38' 'PHP 5.6.36' 'PHP 7.0.30' 'PHP 7.1.17' 'PHP 7.2.5')
+Apache_Info=('Apache 2.2.34' 'Apache 2.4.33')
 
 Database_Selection()
 {
 #which MySQL Version do you want to install?
-    DBSelect="2"
-    Echo_Yellow "You have 5 options for your DataBase install."
-    echo "1: Install ${DB_Info[0]}"
-    echo "2: Install ${DB_Info[1]} (Default)"
-    echo "3: Install ${DB_Info[2]}"
-    echo "4: Install ${DB_Info[3]}"
-    echo "5: Install ${DB_Info[4]}"
-    echo "6: Install ${DB_Info[5]}"
-    echo "7: Install ${DB_Info[6]}"
-    echo "0: DO NOT Install MySQL/MariaDB"
-    read -p "Enter your choice (1, 2, 3, 4, 5, 6, 7 or 0): " DBSelect
+    if [ -z ${DBSelect} ]; then
+        DBSelect="2"
+        Echo_Yellow "You have 10 options for your DataBase install."
+        echo "1: Install ${DB_Info[0]}"
+        echo "2: Install ${DB_Info[1]} (Default)"
+        echo "3: Install ${DB_Info[2]}"
+        echo "4: Install ${DB_Info[3]}"
+        echo "5: Install ${DB_Info[4]}"
+        echo "6: Install ${DB_Info[5]}"
+        echo "7: Install ${DB_Info[6]}"
+        echo "8: Install ${DB_Info[7]}"
+        echo "9: Install ${DB_Info[8]}"
+        echo "0: DO NOT Install MySQL/MariaDB"
+        read -p "Enter your choice (1, 2, 3, 4, 5, 6, 7, 8, 9 or 0): " DBSelect
+    fi
 
     case "${DBSelect}" in
     1)
@@ -41,6 +45,12 @@ Database_Selection()
     7)
         echo "You will install ${DB_Info[6]}"
         ;;
+    8)
+        echo "You will install ${DB_Info[7]}"
+        ;;
+    9)
+        echo "You will install ${DB_Info[8]}"
+        ;;
     0)
         echo "Do not install MySQL/MariaDB!"
         ;;
@@ -49,16 +59,16 @@ Database_Selection()
         DBSelect="2"
     esac
 
-    if [[ "${DBSelect}" = "3" || "${DBSelect}" = "4" || "${DBSelect}" = "6" || "${DBSelect}" = "7" ]] && [ `free -m | grep Mem | awk '{print  $2}'` -le 1024 ]; then
-        echo "Memory less than 1GB, can't install MySQL 5.6, 5.7 or MairaDB 10!"
+    if [[ "${DBSelect}" =~ ^[345789]$ ]] && [ `free -m | grep Mem | awk '{print  $2}'` -le 1024 ]; then
+        echo "Memory less than 1GB, can't install MySQL 5.6+ or MairaDB 10+!"
         exit 1
     fi
 
-    if [[ "${DBSelect}" = "5" || "${DBSelect}" = "6" || "${DBSelect}" = "7" ]]; then
+    if [[ "${DBSelect}" =~ ^[6789]$ ]]; then
         MySQL_Bin="/usr/local/mariadb/bin/mysql"
         MySQL_Config="/usr/local/mariadb/bin/mysql_config"
         MySQL_Dir="/usr/local/mariadb"
-    elif [[ "${DBSelect}" = "1" || "${DBSelect}" = "2" || "${DBSelect}" = "3" || "${DBSelect}" = "4" ]]; then
+    elif [[ "${DBSelect}" =~ ^[12345]$ ]]; then
         MySQL_Bin="/usr/local/mysql/bin/mysql"
         MySQL_Config="/usr/local/mysql/bin/mysql_config"
         MySQL_Dir="/usr/local/mysql"
@@ -66,21 +76,26 @@ Database_Selection()
 
     if [[ "${DBSelect}" != "0" ]]; then
         #set mysql root password
-        echo "==========================="
-        DB_Root_Password="root"
-        Echo_Yellow "Please setup root password of MySQL.(Default password: root)"
-        read -p "Please enter: " DB_Root_Password
-        if [ "${DB_Root_Password}" = "" ]; then
+        if [ -z ${DB_Root_Password} ]; then
+            echo "==========================="
             DB_Root_Password="root"
+            Echo_Yellow "Please setup root password of MySQL."
+            read -p "Please enter: " DB_Root_Password
+            if [ "${DB_Root_Password}" = "" ]; then
+                echo "NO input,password will be generated randomly."
+                DB_Root_Password="lnmp.org#$RANDOM"
+            fi
         fi
         echo "MySQL root password: ${DB_Root_Password}"
 
         #do you want to enable or disable the InnoDB Storage Engine?
         echo "==========================="
 
-        InstallInnodb="y"
-        Echo_Yellow "Do you want to enable or disable the InnoDB Storage Engine?"
-        read -p "Default enable,Enter your choice [Y/n]: " InstallInnodb
+        if [ -z ${InstallInnodb} ]; then
+            InstallInnodb="y"
+            Echo_Yellow "Do you want to enable or disable the InnoDB Storage Engine?"
+            read -p "Default enable,Enter your choice [Y/n]: " InstallInnodb
+        fi
 
         case "${InstallInnodb}" in
         [yY][eE][sS]|[yY])
@@ -101,18 +116,21 @@ Database_Selection()
 PHP_Selection()
 {
 #which PHP Version do you want to install?
-    echo "==========================="
+    if [ -z ${PHPSelect} ]; then
+        echo "==========================="
 
-    PHPSelect="3"
-    Echo_Yellow "You have 6 options for your PHP install."
-    echo "1: Install ${PHP_Info[0]}"
-    echo "2: Install ${PHP_Info[1]}"
-    echo "3: Install ${PHP_Info[2]}"
-    echo "4: Install ${PHP_Info[3]} (Default)"
-    echo "5: Install ${PHP_Info[4]}"
-    echo "6: Install ${PHP_Info[5]}"
-    echo "7: Install ${PHP_Info[6]}"
-    read -p "Enter your choice (1, 2, 3, 4, 5, 6 or 7): " PHPSelect
+        PHPSelect="3"
+        Echo_Yellow "You have 8 options for your PHP install."
+        echo "1: Install ${PHP_Info[0]}"
+        echo "2: Install ${PHP_Info[1]}"
+        echo "3: Install ${PHP_Info[2]}"
+        echo "4: Install ${PHP_Info[3]}"
+        echo "5: Install ${PHP_Info[4]} (Default)"
+        echo "6: Install ${PHP_Info[5]}"
+        echo "7: Install ${PHP_Info[6]}"
+        echo "8: Install ${PHP_Info[7]}"
+        read -p "Enter your choice (1, 2, 3, 4, 5, 6, 7 or 8): " PHPSelect
+    fi
 
     case "${PHPSelect}" in
     1)
@@ -140,23 +158,28 @@ PHP_Selection()
     7)
         echo "You will install ${PHP_Info[6]}"
         ;;
+    8)
+        echo "You will install ${PHP_Info[7]}"
+        ;;
     *)
-        echo "No input,You will install ${PHP_Info[3]}"
-        PHPSelect="4"
+        echo "No input,You will install ${PHP_Info[4]}"
+        PHPSelect="5"
     esac
 }
 
 MemoryAllocator_Selection()
 {
 #which Memory Allocator do you want to install?
-    echo "==========================="
+    if [ -z ${SelectMalloc} ]; then
+        echo "==========================="
 
-    SelectMalloc="1"
-    Echo_Yellow "You have 3 options for your Memory Allocator install."
-    echo "1: Don't install Memory Allocator. (Default)"
-    echo "2: Install Jemalloc"
-    echo "3: Install TCMalloc"
-    read -p "Enter your choice (1, 2 or 3): " SelectMalloc
+        SelectMalloc="1"
+        Echo_Yellow "You have 3 options for your Memory Allocator install."
+        echo "1: Don't install Memory Allocator. (Default)"
+        echo "2: Install Jemalloc"
+        echo "3: Install TCMalloc"
+        read -p "Enter your choice (1, 2 or 3): " SelectMalloc
+    fi
 
     case "${SelectMalloc}" in
     1)
@@ -175,17 +198,17 @@ MemoryAllocator_Selection()
 
     if [ "${SelectMalloc}" =  "1" ]; then
         MySQL51MAOpt=''
-        MySQL55MAOpt=''
+        MySQLMAOpt=''
         NginxMAOpt=''
     elif [ "${SelectMalloc}" =  "2" ]; then
         MySQL51MAOpt='--with-mysqld-ldflags=-ljemalloc'
-        MySQL55MAOpt="-DCMAKE_EXE_LINKER_FLAGS='-ljemalloc' -DWITH_SAFEMALLOC=OFF"
-        MariaDBMAOpt=''
+        MySQLMAOpt='[mysqld_safe]
+malloc-lib=/usr/lib/libjemalloc.so'
         NginxMAOpt="--with-ld-opt='-ljemalloc'"
     elif [ "${SelectMalloc}" =  "3" ]; then
         MySQL51MAOpt='--with-mysqld-ldflags=-ltcmalloc'
-        MySQL55MAOpt="-DCMAKE_EXE_LINKER_FLAGS='-ltcmalloc' -DWITH_SAFEMALLOC=OFF"
-        MariaDBMAOpt="-DCMAKE_EXE_LINKER_FLAGS='-ltcmalloc' -DWITH_SAFEMALLOC=OFF"
+        MySQLMAOpt='[mysqld_safe]
+malloc-lib=/usr/lib/libtcmalloc.so'
         NginxMAOpt='--with-google_perftools_module'
     fi
 }
@@ -200,34 +223,37 @@ Dispaly_Selection()
 Apache_Selection()
 {
     echo "==========================="
-#set Server Administrator Email Address
-    ServerAdmin=""
-    read -p "Please enter Administrator Email Address: " ServerAdmin
+    #set Server Administrator Email Address
+    if [ -z ${ServerAdmin} ]; then
+        ServerAdmin=""
+        read -p "Please enter Administrator Email Address: " ServerAdmin
+    fi
     if [ "${ServerAdmin}" == "" ]; then
         echo "Administrator Email Address will set to webmaster@example.com!"
         ServerAdmin="webmaster@example.com"
     else
-    echo "==========================="
-    echo Server Administrator Email: "${ServerAdmin}"
-    echo "==========================="
+        echo "==========================="
+        echo Server Administrator Email: "${ServerAdmin}"
+        echo "==========================="
     fi
+    echo "==========================="
 
 #which Apache Version do you want to install?
-    echo "==========================="
-
-    ApacheSelect="1"
-    Echo_Yellow "You have 2 options for your Apache install."
-    echo "1: Install ${Apache_Info[0]} (Default)"
-    echo "2: Install ${Apache_Info[1]}"
-    read -p "Enter your choice (1 or 2): " ApacheSelect
+    if [ -z ${ApacheSelect} ]; then
+        ApacheSelect="1"
+        Echo_Yellow "You have 2 options for your Apache install."
+        echo "1: Install ${Apache_Info[0]}"
+        echo "2: Install ${Apache_Info[1]} (Default)"
+        read -p "Enter your choice (1 or 2): " ApacheSelect
+    fi
 
     if [ "${ApacheSelect}" = "1" ]; then
         echo "You will install ${Apache_Info[0]}"
     elif [ "${ApacheSelect}" = "2" ]; then
         echo "You will install ${Apache_Info[1]}"
     else
-        echo "No input,You will install ${Apache_Info[0]}"
-        ApacheSelect="1"
+        echo "No input,You will install ${Apache_Info[1]}"
+        ApacheSelect="2"
     fi
     if [[ "${PHPSelect}" = "1" && "${ApacheSelect}" = "2" ]]; then
         Echo_Red "PHP 5.2.17 is not compatible with Apache 2.4.*."
@@ -239,20 +265,30 @@ Apache_Selection()
 Kill_PM()
 {
     if ps aux | grep "yum" | grep -qv "grep"; then
-        killall yum
+        if [ -s /usr/bin/killall ]; then
+            killall yum
+        else
+            kill `pidof yum`
+        fi
     elif ps aux | grep "apt-get" | grep -qv "grep"; then
-        killall apt-get
+        if [ -s /usr/bin/killall ]; then
+            killall apt-get
+        else
+            kill `pidof apt-get`
+        fi
     fi
 }
 
 Press_Install()
 {
-    echo ""
-    Echo_Green "Press any key to install...or Press Ctrl+c to cancel"
-    OLDCONFIG=`stty -g`
-    stty -icanon -echo min 1 time 0
-    dd count=1 2>/dev/null
-    stty ${OLDCONFIG}
+    if [ -z ${LNMP_Auto} ]; then
+        echo ""
+        Echo_Green "Press any key to install...or Press Ctrl+c to cancel"
+        OLDCONFIG=`stty -g`
+        stty -icanon -echo min 1 time 0
+        dd count=1 2>/dev/null
+        stty ${OLDCONFIG}
+    fi
     . include/version.sh
     Kill_PM
 }
@@ -305,7 +341,7 @@ Get_Dist_Name()
     elif grep -Eqi "Fedora" /etc/issue || grep -Eq "Fedora" /etc/*-release; then
         DISTRO='Fedora'
         PM='yum'
-    elif grep -Eqi "Amazon Linux AMI" /etc/issue || grep -Eq "Amazon Linux AMI" /etc/*-release; then
+    elif grep -Eqi "Amazon Linux" /etc/issue || grep -Eq "Amazon Linux" /etc/*-release; then
         DISTRO='Amazon'
         PM='yum'
     elif grep -Eqi "Debian" /etc/issue || grep -Eq "Debian" /etc/*-release; then
@@ -322,6 +358,9 @@ Get_Dist_Name()
         PM='apt'
     elif grep -Eqi "Mint" /etc/issue || grep -Eq "Mint" /etc/*-release; then
         DISTRO='Mint'
+        PM='apt'
+    elif grep -Eqi "Kali" /etc/issue || grep -Eq "Kali" /etc/*-release; then
+        DISTRO='Kali'
         PM='apt'
     else
         DISTRO='unknow'
@@ -418,12 +457,12 @@ Print_APP_Ver()
 {
     echo "You will install ${Stack} stack."
     if [ "${Stack}" != "lamp" ]; then
-        echo ${Nginx_Ver}
+        echo "${Nginx_Ver}"
     fi
 
-    if [[ "${DBSelect}" = "1" || "${DBSelect}" = "2" || "${DBSelect}" = "3" || "${DBSelect}" = "4" ]]; then
+    if [[ "${DBSelect}" =~ ^[12345]$ ]]; then
         echo "${Mysql_Ver}"
-    elif [[ "${DBSelect}" = "5" || "${DBSelect}" = "6" || "${DBSelect}" = "7" ]]; then
+    elif [[ "${DBSelect}" =~ ^[6789]$ ]]; then
         echo "${Mariadb_Ver}"
     elif [ "${DBSelect}" = "0" ]; then
         echo "Do not install MySQL/MariaDB!"
@@ -445,9 +484,15 @@ Print_APP_Ver()
     echo "Download Mirror: ${Download_Mirror}"
     echo "Nginx Additional Modules: ${Nginx_Modules_Options}"
     echo "PHP Additional Modules: ${PHP_Modules_Options}"
-    if [[ "${DBSelect}" = "1" || "${DBSelect}" = "2" || "${DBSelect}" = "3" || "${DBSelect}" = "4" ]]; then
+    if [ "${Enable_PHP_Fileinfo}" = "y" ]; then
+        echo "enable PHP fileinfo."
+    fi
+    if [ "${Enable_Nginx_Lua}" = "y" ]; then
+        echo "enable Nginx Lua."
+    fi
+    if [[ "${DBSelect}" =~ ^[12345]$ ]]; then
         echo "Database Directory: ${MySQL_Data_Dir}"
-    elif [[ "${DBSelect}" = "5" || "${DBSelect}" = "6" || "${DBSelect}" = "7" ]]; then
+    elif [[ "${DBSelect}" =~ ^[6789]$ ]]; then
         echo "Database Directory: ${MariaDB_Data_Dir}"
     elif [ "${DBSelect}" = "0" ]; then
         echo "Do not install MySQL/MariaDB!"
