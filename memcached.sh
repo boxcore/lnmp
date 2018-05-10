@@ -10,7 +10,7 @@ fi
 
 clear
 printf "=======================================================================\n"
-printf "Install Memcached for LNMP V0.8  ,  Written by Licess \n"
+printf "Install Memcached for LNMP V0.9  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install memcached for lnmp \n"
@@ -42,7 +42,9 @@ cd libevent-2.0.13-stable/
 make&& make install
 cd ../
 
+echo "/usr/local/libevent/lib/" >> /etc/ld.so.conf
 ln -s /usr/local/libevent/lib/libevent-2.0.so.5  /lib/libevent-2.0.so.5
+ldconfig
 
 wget -c http://soft.vpser.net/web/memcached/memcached-1.4.7.tar.gz
 tar zxvf memcached-1.4.7.tar.gz
@@ -73,7 +75,7 @@ printf "===================== install Memcached completed =====================\
 printf "Install Memcached completed,enjoy it!\n"
 printf "You Can visit Memcached PHP Test file: http://ip/memcached.php\n"
 printf "=======================================================================\n"
-printf "Install Memcached for LNMP V0.8  ,  Written by Licess \n"
+printf "Install Memcached for LNMP V0.9  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install Memcached for lnmp \n"

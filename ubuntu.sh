@@ -10,7 +10,7 @@ fi
 
 clear
 echo "========================================================================="
-echo "LNMP V0.8 for Ubuntu VPS ,  Written by Licess "
+echo "LNMP V0.9 for Ubuntu VPS ,  Written by Licess "
 echo "========================================================================="
 echo "A tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo ""
@@ -45,6 +45,28 @@ if [ "$1" != "--help" ]; then
 	echo "mysqlrootpwd=$mysqlrootpwd"
 	echo "==========================="
 
+#do you want to install the InnoDB Storage Engine?
+
+echo "==========================="
+
+	installinnodb="n"
+	echo "Do you want to install the InnoDB Storage Engine?"
+	read -p "(Default no,if you want please input: y ,if not please press the enter button):" installinnodb
+
+	case "$installinnodb" in
+	y|Y|Yes|YES|yes|yES|yEs|YeS|yeS)
+	echo "You will install the InnoDB Storage Engine"
+	installinnodb="y"
+	;;
+	n|N|No|NO|no|nO)
+	echo "You will NOT install the InnoDB Storage Engine!"
+	installinnodb="n"
+	;;
+	*)
+	echo "INPUT error,The InnoDB Storage Engine will NOT install!"
+	installinnodb="n"
+	esac
+
 	get_char()
 	{
 	SAVEDSTTY=`stty -g`
@@ -70,6 +92,10 @@ dpkg -P php
 rm -rf /etc/localtime
 ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
+apt-get install -y ntpdate
+ntpdate -u pool.ntp.org
+date
+
 #Disable SeLinux
 if [ -s /etc/selinux/config ]; then
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
@@ -83,15 +109,11 @@ apt-get update
 apt-get remove -y apache2 apache2-doc apache2-utils apache2.2-common apache2.2-bin apache2-mpm-prefork apache2-doc apache2-mpm-worker mysql-client mysql-server mysql-common php
 killall apache2
 
-apt-get install -y ntpdate
-ntpdate -u pool.ntp.org
-date
-
 apt-get update
 apt-get autoremove -y
 apt-get -fy install
 apt-get install -y build-essential gcc g++ make
-for packages in build-essential gcc g++ make automake autoconf re2c wget cron bzip2 libzip-dev libc6-dev file rcconf flex vim nano bison m4 gawk less make cpp binutils diffutils unzip tar bzip2 libbz2-dev unrar p7zip libncurses5-dev libncurses5 libncurses5-dev libncurses5-dev libtool libevent-dev libpcre3 libpcre3-dev libpcrecpp0  libssl-dev zlibc openssl libsasl2-dev libxml2 libxml2-dev libltdl3-dev libltdl-dev libmcrypt-dev libmysqlclient15-dev zlib1g zlib1g-dev libbz2-1.0 libbz2-dev libglib2.0-0 libglib2.0-dev libpng3 libfreetype6 libfreetype6-dev libjpeg62 libjpeg62-dev libjpeg-dev libpng-dev libpng12-0 libpng12-dev curl libcurl3 libmhash2 libmhash-dev libpq-dev libpq5 gettext libncurses5-dev libcurl4-gnutls-dev libjpeg-dev libpng12-dev libxml2-dev zlib1g-dev libfreetype6 libfreetype6-dev libssl-dev libcurl3 libcurl4-openssl-dev libcurl4-gnutls-dev mcrypt;
+for packages in build-essential gcc g++ make automake autoconf re2c wget cron bzip2 libzip-dev libc6-dev file rcconf flex vim nano bison m4 gawk less make cpp binutils diffutils unzip tar bzip2 libbz2-dev unrar p7zip libncurses5-dev libncurses5 libncurses5-dev libncurses5-dev libtool libevent-dev libpcre3 libpcre3-dev libpcrecpp0  libssl-dev zlibc openssl libsasl2-dev libxml2 libxml2-dev libltdl3-dev libltdl-dev libmcrypt-dev libmysqlclient15-dev zlib1g zlib1g-dev libbz2-1.0 libbz2-dev libglib2.0-0 libglib2.0-dev libpng3 libfreetype6 libfreetype6-dev libjpeg62 libjpeg62-dev libjpeg-dev libpng-dev libpng12-0 libpng12-dev curl libcurl3 libmhash2 libmhash-dev libpq-dev libpq5 gettext libncurses5-dev libcurl4-gnutls-dev libjpeg-dev libpng12-dev libxml2-dev zlib1g-dev libfreetype6 libfreetype6-dev libssl-dev libcurl3 libcurl4-openssl-dev libcurl4-gnutls-dev mcrypt libcap-dev;
 do apt-get install -y $packages --force-yes;apt-get -fy install;apt-get -y autoremove; done
 
 echo "============================check files=================================="
@@ -109,13 +131,6 @@ if [ -s php-5.2.17-fpm-0.5.14.diff.gz ]; then
   wget -c http://soft.vpser.net/web/phpfpm/php-5.2.17-fpm-0.5.14.diff.gz
 fi
 
-if [ -s PDO_MYSQL-1.0.2.tgz ]; then
-  echo "PDO_MYSQL-1.0.2.tgz [found]"
-  else
-  echo "Error: PDO_MYSQL-1.0.2.tgz not found!!!download now......"
-  wget -c http://soft.vpser.net/web/pdo/PDO_MYSQL-1.0.2.tgz
-fi
-
 if [ -s memcache-3.0.6.tgz ]; then
   echo "memcache-3.0.6.tgz [found]"
   else
@@ -130,11 +145,11 @@ if [ -s pcre-8.12.tar.gz ]; then
 wget -c http://soft.vpser.net/web/pcre/pcre-8.12.tar.gz
 fi
 
-if [ -s nginx-1.0.10.tar.gz ]; then
-  echo "nginx-1.0.10.tar.gz [found]"
+if [ -s nginx-1.0.15.tar.gz ]; then
+  echo "nginx-1.0.15.tar.gz [found]"
   else
-  echo "Error: nginx-1.0.10.tar.gz not found!!!download now......"
-  wget -c http://soft.vpser.net/web/nginx/nginx-1.0.10.tar.gz
+  echo "Error: nginx-1.0.15.tar.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/nginx/nginx-1.0.15.tar.gz
 fi
 
 if [ -s mysql-5.1.60.tar.gz ]; then
@@ -144,11 +159,11 @@ if [ -s mysql-5.1.60.tar.gz ]; then
   wget -c http://soft.vpser.net/datebase/mysql/mysql-5.1.60.tar.gz
 fi
 
-if [ -s libiconv-1.13.1.tar.gz ]; then
-  echo "libiconv-1.13.1.tar.gz [found]"
+if [ -s libiconv-1.14.tar.gz ]; then
+  echo "libiconv-1.14.tar.gz [found]"
   else
-  echo "Error: libiconv-1.13.1.tar.gz not found!!!download now......"
-  wget -c http://soft.vpser.net/web/libiconv/libiconv-1.13.1.tar.gz
+  echo "Error: libiconv-1.14.tar.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/libiconv/libiconv-1.14.tar.gz
 fi
 
 if [ -s libmcrypt-2.5.8.tar.gz ]; then
@@ -189,8 +204,8 @@ make && make install
 cd ../
 
 cd $cur_dir
-tar zxvf libiconv-1.13.1.tar.gz
-cd libiconv-1.13.1/
+tar zxvf libiconv-1.14.tar.gz
+cd libiconv-1.14/
 ./configure
 make && make install
 cd ../
@@ -240,8 +255,8 @@ fi
 ldconfig
 
 cat >>/etc/security/limits.conf<<eof
-* soft noproc 65535
-* hard noproc 65535
+* soft nproc 65535
+* hard nproc 65535
 * soft nofile 65535
 * hard nofile 65535
 eof
@@ -260,7 +275,11 @@ apt-get remove -y mysql-common mysql-client
 cd $cur_dir
 tar zxvf mysql-5.1.60.tar.gz
 cd mysql-5.1.60/
+if [ $installinnodb = "y" ]; then
+./configure --prefix=/usr/local/mysql --with-extra-charsets=complex --enable-thread-safe-client --enable-assembler --with-mysqld-ldflags=-all-static --with-charset=utf8 --enable-thread-safe-client --with-big-tables --with-readline --with-ssl --with-embedded-server --enable-local-infile --with-plugins=innobase
+else
 ./configure --prefix=/usr/local/mysql --with-extra-charsets=complex --enable-thread-safe-client --enable-assembler --with-mysqld-ldflags=-all-static --with-charset=utf8 --enable-thread-safe-client --with-big-tables --with-readline --with-ssl --with-embedded-server --enable-local-infile
+fi
 cat Makefile | sed '/set -ex;/,/done/d' > Makefile.1
 rm Makefile
 mv Makefile.1 Makefile
@@ -271,6 +290,9 @@ groupadd mysql
 useradd -s /sbin/nologin -g mysql mysql
 cp /usr/local/mysql/share/mysql/my-medium.cnf /etc/my.cnf
 sed -i 's/skip-locking/skip-external-locking/g' /etc/my.cnf
+if [ $installinnodb = "y" ]; then
+sed -i 's:#innodb:innodb:g' /etc/my.cnf
+fi
 
 /usr/local/mysql/bin/mysql_install_db --user=mysql --basedir=/usr/local/mysql
 ln -s /usr/local/mysql/share/mysql /usr/share/
@@ -325,6 +347,10 @@ wget -c http://soft.vpser.net/web/php/bug/php-5.2.17-max-input-vars.patch
 patch -p1 < php-5.2.17-max-input-vars.patch
 ./buildconf --force
 ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-fastcgi --enable-fpm --enable-force-cgi-redirect --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic
+cd ext/openssl/
+wget -c http://soft.vpser.net/lnmp/ext/debian_patches_disable_SSLv2_for_openssl_1_0_0.patch
+patch -p3 <debian_patches_disable_SSLv2_for_openssl_1_0_0.patch
+cd ../../
 make ZEND_EXTRA_LIBS='-liconv'
 make install
 
@@ -345,12 +371,11 @@ cd memcache-3.0.6/
 make && make install
 cd ../
 
-tar zxvf PDO_MYSQL-1.0.2.tgz
-cd PDO_MYSQL-1.0.2/
+cd $cur_dir/php-5.2.17/ext/pdo_mysql/
 /usr/local/php/bin/phpize
 ./configure --with-php-config=/usr/local/php/bin/php-config --with-pdo-mysql=/usr/local/mysql
 make && make install
-cd ../
+cd $cur_dir/
 
 # php extensions
 sed -i 's#extension_dir = "./"#extension_dir = "/usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/"\nextension = "memcache.so"\nextension = "pdo_mysql.so"\n#' /usr/local/php/etc/php.ini
@@ -362,6 +387,7 @@ sed -i 's/short_open_tag = Off/short_open_tag = On/g' /usr/local/php/etc/php.ini
 sed -i 's/; cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /usr/local/php/etc/php.ini
 sed -i 's/; cgi.fix_pathinfo=0/cgi.fix_pathinfo=0/g' /usr/local/php/etc/php.ini
 sed -i 's/max_execution_time = 30/max_execution_time = 300/g' /usr/local/php/etc/php.ini
+sed -i 's/disable_functions =.*/disable_functions = passthru,exec,system,chroot,scandir,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_alter,ini_restore,dl,pfsockopen,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket,fsockopen/g' /usr/local/php/etc/php.ini
 
 if [ `getconf WORD_BIT` = '32' ] && [ `getconf LONG_BIT` = '64' ] ; then
         wget -c http://soft.vpser.net/web/zend/ZendOptimizer-3.3.9-linux-glibc23-x86_64.tar.gz
@@ -413,8 +439,10 @@ cd pcre-8.12/
 make && make install
 cd ../
 
-tar zxvf nginx-1.0.10.tar.gz
-cd nginx-1.0.10/
+ldconfig
+
+tar zxvf nginx-1.0.15.tar.gz
+cd nginx-1.0.15/
 ./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-ipv6
 make && make install
 cd ../
@@ -430,6 +458,7 @@ cp conf/wordpress.conf /usr/local/nginx/conf/wordpress.conf
 cp conf/discuzx.conf /usr/local/nginx/conf/discuzx.conf
 cp conf/wp2.conf /usr/local/nginx/conf/wp2.conf
 cp conf/none.conf /usr/local/nginx/conf/none.conf
+cp conf/phpwind.conf /usr/local/nginx/conf/phpwind.conf
 sed -i 's/www.lnmp.org/'$domain'/g' /usr/local/nginx/conf/nginx.conf
 
 rm -f /usr/local/nginx/conf/fcgi.conf
@@ -461,6 +490,7 @@ cp p.php /home/wwwroot/p.php
 
 cp conf/index.html /home/wwwroot/index.html
 
+echo "============================add nginx and php-fpm on startup============================"
 #start up
 echo "Download new nginx init.d file......"
 wget -c http://soft.vpser.net/lnmp/ext/init.d.nginx
@@ -475,9 +505,17 @@ cp lnmp /root/lnmp
 chmod +x /root/lnmp
 cp vhost.sh /root/vhost.sh
 chmod +x /root/vhost.sh
+echo "===========================add nginx and php-fpm on startup completed===================="
+echo "Starting LNMP..."
 /etc/init.d/mysql start
 /etc/init.d/php-fpm start
 /etc/init.d/nginx start
+
+#add 80 port to iptables
+if [ -s /sbin/iptables ]; then
+/sbin/iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+/sbin/iptables-save
+fi
 echo "===================================== Check install ==================================="
 clear
 if [ -s /usr/local/nginx ]; then
@@ -501,9 +539,9 @@ fi
 echo "========================== Check install ================================"
 if [ -s /usr/local/nginx ] && [ -s /usr/local/php ] && [ -s /usr/local/mysql ]; then
 
-echo "Install LNMP V0.8 completed! enjoy it."
+echo "Install LNMP V0.9 completed! enjoy it."
 echo "========================================================================="
-echo "LNMP V0.8 for Ubuntu VPS , Written by Licess "
+echo "LNMP V0.9 for Ubuntu VPS , Written by Licess "
 echo "========================================================================="
 echo ""
 echo "For more information please visit http://www.lnmp.org/"
@@ -526,5 +564,6 @@ netstat -ntl
 else
   echo "Sorry,Failed to install LNMP!"
   echo "Please visit http://bbs.vpser.net/forum-25-1.html feedback errors and logs."
+  echo "You can download lnmp.log from your server,and upload lnmp.log to LNMP Forum."
 fi
 fi

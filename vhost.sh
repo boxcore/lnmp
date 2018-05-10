@@ -8,7 +8,7 @@ fi
 
 clear
 echo "========================================================================="
-echo "Add Virtual Host for LNMP V0.8  ,  Written by Licess "
+echo "Add Virtual Host for LNMP V0.9  ,  Written by Licess "
 echo "========================================================================="
 echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo "This script is a tool to add virtual host for nginx "
@@ -91,10 +91,10 @@ if [ "$1" != "--help" ]; then
 	  if [ "$al_name" = "" ]; then
 		al_name="$domain"
 	  fi
-	  al="log_format  $al_name  '\$remote_addr - \$remote_user [\$time_local] "\$request" '
-             '\$status \$body_bytes_sent "\$http_referer" '
-             '"\$http_user_agent" \$http_x_forwarded_for';
-		access_log  /home/wwwlogs/$al_name.log  $al_name;"
+	  alf="log_format  $al_name  '\$remote_addr - \$remote_user [\$time_local] \"\$request\" '
+             '\$status \$body_bytes_sent \"\$http_referer\" '
+             '\"\$http_user_agent\" \$http_x_forwarded_for';"
+	  al="access_log  /home/wwwlogs/$al_name.log  $al_name;"
 	echo "==========================="
 	echo You access log file="$al_name.log"
 	echo "==========================="
@@ -135,6 +135,7 @@ else
 fi
 
 cat >/usr/local/nginx/conf/vhost/$domain.conf<<eof
+$alf
 server
 	{
 		listen       80;
@@ -145,6 +146,7 @@ server
 		include $rewrite.conf;
 		location ~ .*\.(php|php5)?$
 			{
+				try_files \$uri =404;
 				fastcgi_pass  unix:/tmp/php-cgi.sock;
 				fastcgi_index index.php;
 				include fcgi.conf;
@@ -171,7 +173,7 @@ echo "Restart Nginx......"
 /usr/local/nginx/sbin/nginx -s reload
 
 echo "========================================================================="
-echo "Add Virtual Host for LNMP V0.8  ,  Written by Licess "
+echo "Add Virtual Host for LNMP V0.9  ,  Written by Licess "
 echo "========================================================================="
 echo "For more information please visit http://www.lnmp.org/"
 echo ""

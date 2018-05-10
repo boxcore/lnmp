@@ -9,7 +9,7 @@ if [ $(id -u) != "0" ]; then
 fi
 
 printf "=========================================================================\n"
-printf "Manager for LNMPA V0.8  ,  Written by Licess \n"
+printf "Manager for LNMPA V0.9  ,  Written by Licess \n"
 printf "=========================================================================\n"
 printf "LNMPA is a tool to auto-compile & install Nginx+MySQL+PHP+Apache on Linux \n"
 printf "This script is a tool to Manage status of LNMPA \n"

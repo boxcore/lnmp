@@ -10,7 +10,7 @@ fi
 
 clear
 printf "=======================================================================\n"
-printf "Install Apache for LNMP V0.8  ,  Written by Licess \n"
+printf "Install Apache for LNMP V0.9  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install Apache for lnmp \n"
@@ -61,11 +61,11 @@ ipv4=`ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr 
 
 printf "===================== Check And Download Files =================\n"
 
-if [ -s httpd-2.2.17.tar.gz ]; then
-  echo "httpd-2.2.17.tar.gz [found]"
+if [ -s httpd-2.2.22.tar.gz ]; then
+  echo "httpd-2.2.22.tar.gz [found]"
   else
-  echo "Error: httpd-2.2.17.tar.gz not found!!!download now......"
-  wget -c http://soft.vpser.net/web/apache/httpd-2.2.17.tar.gz
+  echo "Error: httpd-2.2.22.tar.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/apache/httpd-2.2.22.tar.gz
 fi
 
 if [ -s mod_rpaf-0.6.tar.gz ]; then
@@ -79,21 +79,14 @@ if [ -s php-5.2.17.tar.gz ]; then
   echo "php-5.2.17.tar.gz [found]"
   else
   echo "Error: php-5.2.17.tar.gz not found!!!download now......"
-  wget -c http://us2.php.net/distributions/php-5.2.17.tar.gz
+  wget -c http://soft.vpser.net/web/php/php-5.2.17.tar.gz
 fi
 
-if [ -s PDO_MYSQL-1.0.2.tgz ]; then
-  echo "PDO_MYSQL-1.0.2.tgz [found]"
+if [ -s memcache-3.0.6.tgz ]; then
+  echo "memcache-3.0.6.tgz [found]"
   else
-  echo "Error: PDO_MYSQL-1.0.2.tgz not found!!!download now......"
-  wget -c http://pecl.php.net/get/PDO_MYSQL-1.0.2.tgz
-fi
-
-if [ -s memcache-3.0.5.tgz ]; then
-  echo "memcache-3.0.5.tgz [found]"
-  else
-  echo "Error: memcache-3.0.5.tgz not found!!!download now......"
-  wget -c http://pecl.php.net/get/memcache-3.0.5.tgz
+  echo "Error: memcache-3.0.6.tgz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/memcache/memcache-3.0.6.tgz
 fi
 printf "=========================== install Apache ======================\n"
 
@@ -104,9 +97,9 @@ cp /usr/local/php/etc/php.ini /root/lnmpbackup/
 cp /usr/local/php/etc/php-fpm.conf /root/lnmpbackup/
 
 cd $cur_dir
-tar zxvf httpd-2.2.17.tar.gz
-cd httpd-2.2.17/
-./configure --prefix=/usr/local/apache --enable-headers --enable-mime-magic --enable-proxy --enable-so --enable-rewrite --enable-ssl --enable-suexec --disable-userdir --with-included-apr --with-mpm=prefork --with-ssl=/usr --disable-userdir --disable-cgid --disable-cgi
+tar zxvf httpd-2.2.22.tar.gz
+cd httpd-2.2.22/
+./configure --prefix=/usr/local/apache --enable-headers --enable-mime-magic --enable-proxy --enable-so --enable-rewrite --enable-ssl --enable-deflate --enable-suexec --disable-userdir --with-included-apr --with-mpm=prefork --with-ssl=/usr --disable-userdir --disable-cgid --disable-cgi
 make && make install
 cd ..
 
@@ -152,6 +145,13 @@ wget -c http://soft.vpser.net/web/php/bug/php-5.2.17-max-input-vars.patch
 patch -p1 < php-5.2.17-max-input-vars.patch
 ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-apxs2=/usr/local/apache/bin/apxs --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic
 
+if grep "Ubuntu" /etc/issue; then
+cd ext/openssl/
+wget -c http://soft.vpser.net/lnmp/ext/debian_patches_disable_SSLv2_for_openssl_1_0_0.patch
+patch -p3 <debian_patches_disable_SSLv2_for_openssl_1_0_0.patch
+cd ../../
+fi
+
 rm -rf libtool
 cp /usr/local/apache/build/libtool .
 
@@ -163,19 +163,18 @@ cp php.ini-dist /usr/local/php/etc/php.ini
 cd ../
 
 cd $cur_dir
-tar zxvf memcache-3.0.5.tgz
-cd memcache-3.0.5/
+tar zxvf memcache-3.0.6.tgz
+cd memcache-3.0.6/
 /usr/local/php/bin/phpize
 ./configure --with-php-config=/usr/local/php/bin/php-config
 make && make install
 cd ../
 
-tar zxvf PDO_MYSQL-1.0.2.tgz
-cd PDO_MYSQL-1.0.2/
+cd $cur_dir/php-5.2.17/ext/pdo_mysql/
 /usr/local/php/bin/phpize
 ./configure --with-php-config=/usr/local/php/bin/php-config --with-pdo-mysql=/usr/local/mysql
 make && make install
-cd ../
+cd $cur_dir/
 
 # php extensions
 sed -i 's#extension_dir = "./"#extension_dir = "/usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/"\nextension = "memcache.so"\nextension = "pdo_mysql.so"\n#' /usr/local/php/etc/php.ini
@@ -186,6 +185,7 @@ sed -i 's/;date.timezone =/date.timezone = PRC/g' /usr/local/php/etc/php.ini
 sed -i 's/short_open_tag = Off/short_open_tag = On/g' /usr/local/php/etc/php.ini
 sed -i 's/; cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /usr/local/php/etc/php.ini
 sed -i 's/max_execution_time = 30/max_execution_time = 300/g' /usr/local/php/etc/php.ini
+sed -i 's/disable_functions =.*/disable_functions = passthru,exec,system,chroot,scandir,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_alter,ini_restore,dl,pfsockopen,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket,fsockopen/g' /usr/local/php/etc/php.ini
 
 if [ `getconf WORD_BIT` = '32' ] && [ `getconf LONG_BIT` = '64' ] ; then
         wget -c http://soft.vpser.net/web/zend/ZendOptimizer-3.3.9-linux-glibc23-x86_64.tar.gz

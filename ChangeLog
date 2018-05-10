@@ -1,5 +1,21 @@
 更新记录
 
+2012年4月23日发布LNMP 0.9
+
+优化安装过程及错误处理；
+修正eaccelerator和ionCube的PHP版本判断错误的问题；
+修正memcached pid创建失败的问题
+修正pdo_mysql安装方法；
+PHP增加部分禁用函数；
+优化Nginx升级脚本；
+去除vsftpd安装脚本；
+修正访问不存在的PHP时返回404；
+更新Nginx版本；
+更新PHP探针；
+增加phpwin伪静态
+升级过程增加停止LNMP相关服务；
+修正Nginx log_format问题；
+
 2011年4月27日发布LNMP 0.7
 优化安装过程，修复多处安装错误处理；
 添加LNMP至LNMPA升级包；

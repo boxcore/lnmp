@@ -49,7 +49,7 @@ fi
 sed -i '/ionCube Loader/d' /usr/local/php/etc/php.ini
 sed -i '/ioncube_loader_lin/d' /usr/local/php/etc/php.ini
 
-if [ $php_version = "5.2.14" ] || [ $php_version = "5.2.15" ] || [ $php_version = "5.2.16" ] || [ $php_version = "5.2.17" ]; then
+if [ $php_version = "5.2.14" ] || [ $php_version = "5.2.15" ] || [ $php_version = "5.2.16" ] || [ $php_version = "5.2.17" ] || [ $php_version = "5.2.17p1" ]; then
 cat >ionCube.ini<<EOF
 [ionCube Loader]
 zend_extension="/usr/local/ioncube/ioncube_loader_lin_5.2.so"

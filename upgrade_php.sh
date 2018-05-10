@@ -61,7 +61,7 @@ if [ -s php-$php_version.tar.gz ]; then
   echo "php-$php_version.tar.gz [found]"
   else
   echo "Error: php-$php_version.tar.gz not found!!!download now......"
-  wget -c http://us2.php.net/distributions/php-$php_version.tar.gz
+  wget -c http://www.php.net/distributions/php-$php_version.tar.gz
   if [ $? -eq 0 ]; then
 	echo "Download php-$php_version.tar.gz successfully!"
   else
@@ -76,9 +76,21 @@ if [ -s autoconf-2.13.tar.gz ]; then
   echo "autoconf-2.13.tar.gz [found]"
   else
   echo "Error: autoconf-2.13.tar.gz not found!!!download now......"
-  wget -c http://ftp.gnu.org/gnu/autoconf/autoconf-2.13.tar.gz
+  wget -c http://soft.vpser.net/lib/autoconf/autoconf-2.13.tar.gz
 fi
 echo "============================check files=================================="
+
+echo "Stoping Nginx..."
+/etc/init.d/nginx stop
+echo "Stoping MySQL..."
+/etc/init.d/mysql stop
+echo "Stoping PHP-FPM..."
+/etc/init.d/php-fpm stop
+if [ -s /etc/init.d/memceached ]; then
+  echo "Stoping Memcached..."
+  /etc/init.d/memcacehd stop
+fi
+
 rm -rf php-$php_version/
 
 tar zxvf autoconf-2.13.tar.gz
@@ -163,7 +175,7 @@ else
 echo "It looks like working.";
 cat testbuildconf
 fi
-./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --enable-fpm --with-fpm-user=www --with-fpm-group=www --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --disable-fileinfo
+./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --enable-fpm --with-fpm-user=www --with-fpm-group=www --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --disable-fileinfo
 
 make ZEND_EXTRA_LIBS='-liconv'
 make install
@@ -173,13 +185,6 @@ mkdir -p /usr/local/php/etc
 cp php.ini-production /usr/local/php/etc/php.ini
 
 echo "Checking php extensions files......"
-if [ -s PDO_MYSQL-1.0.2.tgz ]; then
-  echo "PDO_MYSQL-1.0.2.tgz [found]"
-  else
-  echo "Error: PDO_MYSQL-1.0.2.tgz not found!!!download now......"
-  wget -c http://soft.vpser.net/web/pdo/PDO_MYSQL-1.0.2.tgz
-fi
-
 if [ -s memcache-2.2.5.tgz ]; then
   echo "memcache-2.2.5.tgz [found]"
   else
@@ -195,17 +200,9 @@ cd memcache-2.2.5/
 make && make install
 cd ../
 
-tar zxvf PDO_MYSQL-1.0.2.tgz
-cd PDO_MYSQL-1.0.2/
-/usr/local/php/bin/phpize
-./configure --with-php-config=/usr/local/php/bin/php-config --with-pdo-mysql=/usr/local/mysql
-make
-make install
-cd ../
-
 # php extensions
 echo "Modify php.ini......"
-sed -i 's#extension_dir = "./"#extension_dir = "/usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/"\nextension = "memcache.so"\nextension = "pdo_mysql.so"\n#' /usr/local/php/etc/php.ini
+sed -i 's#extension_dir = "./"#extension_dir = "/usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/"\nextension = "memcache.so"\n#' /usr/local/php/etc/php.ini
 sed -i 's/post_max_size = 8M/post_max_size = 50M/g' /usr/local/php/etc/php.ini
 sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 50M/g' /usr/local/php/etc/php.ini
 sed -i 's/;date.timezone =/date.timezone = PRC/g' /usr/local/php/etc/php.ini
@@ -216,6 +213,7 @@ sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /usr/local/php/etc/php.ini
 sed -i 's/max_execution_time = 30/max_execution_time = 300/g' /usr/local/php/etc/php.ini
 sed -i 's/register_long_arrays = On/;register_long_arrays = On/g' /usr/local/php/etc/php.ini
 sed -i 's/magic_quotes_gpc = On/;magic_quotes_gpc = On/g' /usr/local/php/etc/php.ini
+sed -i 's/disable_functions =.*/disable_functions = passthru,exec,system,chroot,scandir,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_alter,ini_restore,dl,pfsockopen,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket,fsockopen/g' /usr/local/php/etc/php.ini
 
 echo "Install ZendGuardLoader for PHP 5.3"
 if [ `getconf WORD_BIT` = '32' ] && [ `getconf LONG_BIT` = '64' ] ; then
@@ -267,20 +265,20 @@ wget -c http://soft.vpser.net/lnmp/ext/lnmp4php5.3
 cp lnmp4php5.3 /root/lnmp
 chmod +x /root/lnmp
 
-echo "Download new nginx init.d file......"
-wget -c http://soft.vpser.net/lnmp/ext/init.d.nginx
-cp init.d.nginx /etc/init.d/nginx
-chmod +x /etc/init.d/nginx
 
 echo "Remove old start files and Add new start file....."
 if [ -s /etc/debian_version ]; then
 update-rc.d -f nginx.sh remove
-rm /etc/init.d/nginx.sh
-update-rc.d -f php-fpm defaults
-update-rc.d -f nginx defaults
+if [ -s /etc/init.d/nginx.sh ]; then
+  echo "Download new nginx init.d file......"
+  wget -c http://soft.vpser.net/lnmp/ext/init.d.nginx
+  cp init.d.nginx /etc/init.d/nginx
+  chmod +x /etc/init.d/nginx
+  rm -f /etc/init.d/nginx.sh
+  update-rc.d -f nginx defaults
 fi
-
-if [ -s /etc/redhat-release ]; then
+update-rc.d -f php-fpm defaults
+elif [ -s /etc/redhat-release ]; then
 sed -i '/php-fpm/'d /etc/rc.local
 sed -i '/nginx/'d /etc/rc.local
 #echo "/etc/init.d/nginx start" >>/etc/rc.local
@@ -289,7 +287,16 @@ chkconfig --level 345 php-fpm on
 chkconfig --level 345 nginx on
 fi
 
+echo "Starting Nginx..."
+/etc/init.d/nginx start
+echo "Starting MySQL..."
+/etc/init.d/mysql start
+echo "Starting PHP-FPM..."
 /etc/init.d/php-fpm start
+if [ -s /etc/init.d/memceached ]; then
+  echo "Starting Memcached..."
+  /etc/init.d/memcacehd start
+fi
 
 fi
 

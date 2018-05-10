@@ -78,10 +78,12 @@ cd ../
 sed -i '/extension = "pdo_mysql.so"/i\
 extension = "imagick.so"' /usr/local/php/etc/php.ini
 
-if [ -s /etc/init.d/php-fpm ]; then
-/etc/init.d/php-fpm restart
+if [ -s /etc/init.d/httpd ] && [ -s /usr/local/apache ]; then
+echo "Restarting Apache......"
+/etc/init.d/httpd restart
 else
-/etc/init.d/httpd -k restart
+echo "Restarting php-fpm......"
+/etc/init.d/php-fpm restart
 fi
 
 echo "========================================================================="

@@ -9,7 +9,7 @@ if [ $(id -u) != "0" ]; then
 fi
 clear
 printf "=========================================================================\n"
-printf "Pureftpd for LNMP V0.8  ,  Written by Licess \n"
+printf "Pureftpd for LNMP V0.9  ,  Written by Licess \n"
 printf "=========================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install pureftpd for lnmp \n"
@@ -78,6 +78,11 @@ wget -c http://soft.vpser.net/ftp/pure-ftpd/pure-ftpd-1.0.35.tar.gz
 wget -c http://soft.vpser.net/ftp/pure-ftpd/User_manager_for-PureFTPd_v2.1_CN.zip
 
 cp /usr/local/mysql/lib/mysql/*.* /usr/lib/
+if [ -s /var/lib/mysql/mysql.sock ]; then
+rm -f /var/lib/mysql/mysql.sock
+fi
+mkdir /var/lib/mysql
+ln -s /tmp/mysql.sock /var/lib/mysql/mysql.sock
 
 echo "Start install pure-ftpd..."
 tar zxvf pure-ftpd-1.0.35.tar.gz
@@ -129,7 +134,7 @@ chown www -R /home/wwwroot/ftp/
 echo "Modify parameters of GUI User manager for PureFTPd..."
 sed -i 's/English/Chinese/g' /home/wwwroot/ftp/config.php
 sed -i 's/tmppasswd/'$mysqlftppwd'/g' /home/wwwroot/ftp/config.php
-sed -i 's/myipaddress.com/127.0.0.1/g' /home/wwwroot/ftp/config.php
+sed -i 's/myipaddress.com/localhost/g' /home/wwwroot/ftp/config.php
 mv /home/wwwroot/ftp/install.php /home/wwwroot/ftp/install.php.bak
 
 cd $cur_dir
@@ -142,10 +147,14 @@ chmod +x /etc/init.d/pureftpd
 
 if [ -s /etc/debian_version ]; then
 update-rc.d pureftpd defaults
+elif [ -s /etc/redhat-release ]; then
+chkconfig --level 345 pureftpd on
 fi
 
-if [ -s /etc/redhat-release ]; then
-echo "/etc/init.d/pureftpd start" >>/etc/rc.local
+if [ -s /sbin/iptables ]; then
+/sbin/iptables -I INPUT -p tcp --dport 21 -j ACCEPT
+/sbin/iptables -I INPUT -p tcp --dport 20 -j ACCEPT
+/sbin/iptables-save
 fi
 
 clear
@@ -158,7 +167,7 @@ printf "Now you enter http://youdomain.com/ftp/ in you Web Browser to manager FT
 printf "Your password of User manager was:$ftpmanagerpwd\n"
 printf "Your password of mysql ftp user was:$mysqlftppwd\n"
 printf "=======================================================================\n"
-printf "Install Pure-FTPd for LNMP V0.8  ,  Written by Licess \n"
+printf "Install Pure-FTPd for LNMP V0.9  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install Pure-FTPd for lnmp \n"

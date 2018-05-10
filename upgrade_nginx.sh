@@ -70,6 +70,15 @@ if [ -s nginx-$nginx_version.tar.gz ]; then
   fi
 fi
 echo "============================check files=================================="
+echo "Stoping MySQL..."
+/etc/init.d/mysql stop
+echo "Stoping PHP-FPM..."
+/etc/init.d/php-fpm stop
+if [ -s /etc/init.d/memceached ]; then
+  echo "Stoping Memcached..."
+  /etc/init.d/memcacehd stop
+fi
+
 rm -rf nginx-$nginx_version/
 
 tar zxvf nginx-$nginx_version.tar.gz
@@ -85,6 +94,15 @@ echo "Upgrade completed!"
 echo "Program will display Nginx Version......"
 /usr/local/nginx/sbin/nginx -v
 cd ../
+
+echo "Starting MySQL..."
+/etc/init.d/mysql start
+echo "Starting PHP-FPM..."
+/etc/init.d/php-fpm start
+if [ -s /etc/init.d/memceached ]; then
+  echo "Starting Memcached..."
+  /etc/init.d/memcacehd start
+fi
 
 echo "========================================================================="
 echo "You have successfully upgrade from $old_nginx_version to $nginx_version"
