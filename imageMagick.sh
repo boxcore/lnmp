@@ -34,48 +34,48 @@ if [ "$1" != "--help" ]; then
 	char=`get_char`
 
 echo "============================check files=================================="
-if [ -s ImageMagick-6.7.1-6.tar.gz ]; then
-  echo "ImageMagick-6.7.1-6.tar.gz [found]"
+if [ -s ImageMagick-6.8.8-9.tar.gz ]; then
+  echo "ImageMagick-6.8.8-9.tar.gz [found]"
   else
-  echo "Error: ImageMagick-6.7.1-6.tar.gz not found!!!download now......"
-  wget -c http://soft.vpser.net/web/imagemagick/ImageMagick-6.7.1-6.tar.gz
+  echo "Error: ImageMagick-6.8.8-9.tar.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/imagemagick/ImageMagick-6.8.8-9.tar.gz
   if [ $? -eq 0 ]; then
-	echo "Download ImageMagick-6.7.1-6.tar.gz successfully!"
+	echo "Download ImageMagick-6.8.8-9.tar.gz successfully!"
   else
-	echo "WARNING!ImageMagick-6.7.1-6.tar.gz was not download!"
+	echo "WARNING!ImageMagick-6.8.8-9.tar.gz was not download!"
 	sleep 5
 	exit 1
   fi
 fi
 
-if [ -s imagick-3.0.1.tgz ]; then
-  echo "imagick-3.0.1.tgz [found]"
+if [ -s imagick-3.1.2.tgz ]; then
+  echo "imagick-3.1.2.tgz [found]"
   else
   echo "Error: imagick-3.0.1.tgz not found!!!download now......"
-  wget -c http://soft.vpser.net/web/imagick/imagick-3.0.1.tgz
+  wget -c http://soft.vpser.net/web/imagick/imagick-3.1.2.tgz
   if [ $? -eq 0 ]; then
-	echo "Download imagick-3.0.1.tgz successfully!"
+	echo "Download imagick-3.1.2.tgz successfully!"
   else
-	echo "WARNING!imagick-3.0.1.tgz was not download!"
+	echo "WARNING!imagick-3.1.2.tgz was not download!"
 	sleep 5
 	exit 1
   fi
 fi
 echo "========================Install ImageMagick=============================="
-tar zxvf ImageMagick-6.7.1-6.tar.gz
-cd ImageMagick-6.7.1-6/
+tar zxvf ImageMagick-6.8.8-9.tar.gz
+cd ImageMagick-6.8.8-9/
 ./configure --prefix=/usr/local/imagemagick
 make && make install
 cd ../
 
-tar zxvf imagick-3.0.1.tgz
-cd imagick-3.0.1/
+tar zxvf imagick-3.1.2.tgz
+cd imagick-3.1.2/
 /usr/local/php/bin/phpize
 ./configure --with-php-config=/usr/local/php/bin/php-config --with-imagick=/usr/local/imagemagick
 make && make install
 cd ../
 
-sed -i '/extension = "pdo_mysql.so"/i\
+sed -i '/the dl()/i\
 extension = "imagick.so"' /usr/local/php/etc/php.ini
 
 if [ -s /etc/init.d/httpd ] && [ -s /usr/local/apache ]; then
@@ -96,5 +96,3 @@ echo "For more information please visit http://www.lnmp.org/"
 echo ""
 echo "========================================================================="
 fi
-
-

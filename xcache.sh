@@ -9,34 +9,47 @@ if [ $(id -u) != "0" ]; then
 fi
 
 clear
-printf "=======================================================================\n"
-printf "Install XCache for LNMP V1.0  ,  Written by Licess \n"
-printf "=======================================================================\n"
-printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
-printf "This script is a tool to install XCache for lnmp \n"
-printf "\n"
-printf "more information please visit http://www.lnmp.org \n"
-printf "=======================================================================\n"
+echo "======================================================================="
+echo "Install XCache for LNMP ,  Written by Licess "
+echo "======================================================================="
+echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
+echo "This script is a tool to install XCache for lnmp "
+echo ""
+echo "more information please visit http://www.lnmp.org "
+echo "======================================================================="
 cur_dir=$(pwd)
         
 	ver="new"
 	echo "Which version do you want to install:"
-	echo "Install XCache 2.0.0 please type: old"
-	echo "Install XCache 3.0.1 please type: new"
-	read -p "Type old or new (Default install XCache 3.0.1):" ver
+	echo "Install XCache 2.0.1 please type: old"
+	echo "Install XCache 3.1.0 please type: new"
+	read -p "Type old or new (Default install XCache 3.1.0):" ver
 	if [ "$ver" = "" ]; then
 		ver="new"
 	fi
 
 	if [ "$ver" = "old" ]; then
-		echo "You will install XCache 2.0.0"
+		echo "You will install XCache 2.0.1"
+		echo "XCache 2 and eAccelerator cannot co-exist."
 	elif [ "$ver" = "new" ]; then 
-		echo "You will install XCache 3.0.1"
+		echo "You will install XCache 3.1.0"
 	else
 		echo "Input error,please input old or new !"
 		echo "Please Rerun $0"
 		exit 1
 	fi
+
+	xadmin_pass=""
+	read -p "Please input your admin password of XCache Administration Page:" xadmin_pass
+	if [ "$xadmin_pass" = "" ]; then
+		echo "password can't be NULL!"
+		exit 1
+	else
+	echo "================================================="
+	echo "Your admin password of xcache was:$xadmin_pass"
+	echo "================================================="
+	fi
+	xmd5pass=`echo -n "$xadmin_pass" |md5sum |awk '{print $1}'`
 
 	get_char()
 	{
@@ -53,13 +66,15 @@ cur_dir=$(pwd)
 	char=`get_char`
 
 
-printf "=========================== Install xcache ======================\n"
+echo "=========================== Install xcache ======================"
 if [ -s /usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/xcache.so ]; then
 	rm -f /usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/xcache.so
 elif [ -s /usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/xcache.so ]; then
 	rm -f /usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/xcache.so
 elif [ -s /usr/local/php/lib/php/extensions/no-debug-non-zts-20100525/xcache.so ]; then
 	rm -f /usr/local/php/lib/php/extensions/no-debug-non-zts-20100525/xcache.so
+elif [ -s /usr/local/php/lib/php/extensions/no-debug-non-zts-20121212/xcache.so ]; then
+	rm -f /usr/local/php/lib/php/extensions/no-debug-non-zts-20121212/xcache.so
 fi
 
 cur_php_version=`/usr/local/php/bin/php -v`
@@ -69,6 +84,13 @@ elif [[ "$cur_php_version" =~ "PHP 5.3." ]]; then
    zend_ext="/usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/xcache.so"
 elif [[ "$cur_php_version" =~ "PHP 5.4." ]]; then
    zend_ext="/usr/local/php/lib/php/extensions/no-debug-non-zts-20100525/xcache.so"
+elif [[ "$cur_php_version" =~ "PHP 5.5." ]]; then
+   zend_ext="/usr/local/php/lib/php/extensions/no-debug-non-zts-20121212/xcache.so"
+else
+	echo "Error: can't get php version!"
+	echo "Maybe your php was didn't install or php configuration file has errors.Please check."
+	sleep 3
+	exit 1
 fi
 
 cpu_count=`cat /proc/cpuinfo |grep -c processor`
@@ -93,11 +115,11 @@ cat >>/usr/local/php/etc/php.ini<<EOF
 [xcache-common]
 zend_extension = $zend_ext
 
-;[xcache.admin]
-;xcache.admin.enable_auth = On
-;xcache.admin.user = "admin"
+[xcache.admin]
+xcache.admin.enable_auth = On
+xcache.admin.user = "admin"
 ;run: echo -n "yourpassword" |md5sum |awk '{print $1}' to get md5 password
-;xcache.admin.pass = "md5 password"
+xcache.admin.pass = "$xmd5pass"
 
 [xcache]
 xcache.shm_scheme =        "mmap"
@@ -133,17 +155,18 @@ xcache.coveragedump_directory = ""
 ;xcache end
 EOF
 
-#\cp -R $cur_dir/xcache-2.0.1/admin /home/wwwroot/default/xcache
+\cp -a $cur_dir/xcache-2.0.1/admin /home/wwwroot/default/xcache
+chown www:www -R /home/wwwroot/default/xcache
 }
 
 function install_new_xcache
 {
-if [ -s xcache-3.0.1 ]; then
-	rm -rf xcache-3.0.1/
+if [ -s xcache-3.1.0 ]; then
+	rm -rf xcache-3.1.0/
 fi
-wget -c http://soft.vpser.net/web/xcache/xcache-3.0.1.tar.gz
-tar zxvf xcache-3.0.1.tar.gz
-cd xcache-3.0.1/
+wget -c http://soft.vpser.net/web/xcache/xcache-3.1.0.tar.gz
+tar zxvf xcache-3.1.0.tar.gz
+cd xcache-3.1.0/
 /usr/local/php/bin/phpize
 ./configure --enable-xcache --enable-xcache-coverager --enable-xcache-optimizer --with-php-config=/usr/local/php/bin/php-config
 make
@@ -156,11 +179,11 @@ cat >>/usr/local/php/etc/php.ini<<EOF
 [xcache-common]
 extension = xcache.so
 
-;[xcache.admin]
-;xcache.admin.enable_auth = On
-;xcache.admin.user = "admin"
+[xcache.admin]
+xcache.admin.enable_auth = On
+xcache.admin.user = "admin"
 ;run: echo -n "yourpassword" |md5sum |awk '{print $1}' to get md5 password
-;xcache.admin.pass = "md5 password"
+xcache.admin.pass = "$xmd5pass"
 
 [xcache]
 xcache.shm_scheme =        "mmap"
@@ -196,7 +219,8 @@ xcache.coveragedump_directory = ""
 ;xcache end
 EOF
 
-#\cp -R htdocs /home/wwwroot/default/xcache
+\cp -a $cur_dir/xcache-3.1.0/htdocs /home/wwwroot/default/xcache
+chown www:www -R /home/wwwroot/default/xcache
 }
 
 if [ "$ver" = "old" ]; then
@@ -213,13 +237,13 @@ echo "Restarting php-fpm......"
 /etc/init.d/php-fpm restart
 fi
 
-printf "===================== install xcache completed ===================\n"
-printf "Install xcache completed,enjoy it!\n"
-printf "=======================================================================\n"
-printf "Install xcache for LNMP V1.0  ,  Written by Licess \n"
-printf "=======================================================================\n"
-printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
-printf "This script is a tool to install xcache for lnmp \n"
-printf "\n"
-printf "For more information please visit http://www.lnmp.org \n"
-printf "=======================================================================\n"
+echo "===================== install xcache completed ==================="
+echo "Install xcache completed,enjoy it!"
+echo "======================================================================="
+echo "Install xcache for LNMP  ,  Written by Licess "
+echo "======================================================================="
+echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
+echo "This script is a tool to install xcache for lnmp "
+echo ""
+echo "For more information please visit http://www.lnmp.org "
+echo "======================================================================="

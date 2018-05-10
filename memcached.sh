@@ -35,14 +35,13 @@ cur_dir=$(pwd)
 
 printf "=========================== install memcached ======================\n"
 
-echo "Install memcache php extension..."
-wget -c http://soft.vpser.net/web/memcache/memcache-3.0.6.tgz
-tar zxvf memcache-3.0.6.tgz
-cd memcache-3.0.6/
-/usr/local/php/bin/phpize
-./configure --with-php-config=/usr/local/php/bin/php-config
-make && make install
-cd ../
+if [ -s /usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/memcache.so ]; then
+	rm -f /usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/memcache.so
+elif [ -s /usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/memcache.so ]; then
+	rm -f /usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/memcache.so
+elif [ -s /usr/local/php/lib/php/extensions/no-debug-non-zts-20100525/memcache.so ]; then
+	rm -f /usr/local/php/lib/php/extensions/no-debug-non-zts-20100525/memcache.so
+fi
 
 cur_php_version=`/usr/local/php/bin/php -v`
 
@@ -55,7 +54,21 @@ sed -i 's#extension_dir = "./"#extension_dir = "/usr/local/php/lib/php/extension
 elif echo "$cur_php_version" | grep -q "5.4."
 then
 sed -i 's#extension_dir = "./"#extension_dir = "/usr/local/php/lib/php/extensions/no-debug-non-zts-20100525/"\nextension = "memcache.so"\n#' /usr/local/php/etc/php.ini
+else
+	echo "Error: can't get php version!"
+	echo "Maybe your php was didn't install or php configuration file has errors.Please check."
+	sleep 3
+	exit 1
 fi
+
+echo "Install memcache php extension..."
+wget -c http://soft.vpser.net/web/memcache/memcache-3.0.8.tgz
+tar zxvf memcache-3.0.8.tgz
+cd memcache-3.0.8/
+/usr/local/php/bin/phpize
+./configure --with-php-config=/usr/local/php/bin/php-config
+make && make install
+cd ../
 
 wget -c http://soft.vpser.net/lib/libevent/libevent-2.0.13-stable.tar.gz
 tar zxvf libevent-2.0.13-stable.tar.gz
@@ -84,6 +97,10 @@ cp conf/memcached-init /etc/init.d/memcached
 chmod +x /etc/init.d/memcached
 useradd -s /sbin/nologin nobody
 
+if [ ! -d /var/lock/subsys ]; then
+  mkdir -p /var/lock/subsys
+fi
+
 if [ -s /etc/debian_version ]; then
 update-rc.d -f memcached defaults
 elif [ -s /etc/redhat-release ]; then
@@ -91,7 +108,15 @@ chkconfig --level 345 memcached on
 fi
 
 echo "Copy Memcached PHP Test file..."
-cp conf/memcached.php /home/wwwroot/memcached.php
+cp conf/memcached.php /home/wwwroot/default/memcached.php
+
+if [ -s /etc/init.d/httpd ] && [ -s /usr/local/apache ]; then
+	echo "Restart Apache......"
+	/etc/init.d/httpd -k restart
+else
+	echo "Restart php-fpm......"
+	/etc/init.d/php-fpm restart
+fi
 
 echo "Starting Memcached..."
 /etc/init.d/memcached start

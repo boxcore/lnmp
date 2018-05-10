@@ -22,6 +22,11 @@ if [ "$1" != "--help" ]; then
 
 old_php_version=`/usr/local/php/bin/php -r 'echo PHP_VERSION;'`
 #echo $old_php_version
+if [ -s /usr/local/mariadb/bin/mysql ]; then
+	ismysql="no"
+else
+	ismysql="yes"
+fi
 
 #set php version
 
@@ -65,10 +70,15 @@ if [ -s php-$php_version.tar.gz ]; then
   if [ $? -eq 0 ]; then
 	echo "Download php-$php_version.tar.gz successfully!"
   else
-	echo "WARNING!May be the php version you input was wrong,please check!"
-	echo "PHP Version input was:"$php_version
-	sleep 5
-	exit 1
+  	wget -c http://museum.php.net/php5/php-$php_version.tar.gz
+  	if [ $? -eq 0 ]; then
+		echo "Download php-$php_version.tar.gz successfully!"
+  	else
+		echo "WARNING!May be the php version you input was wrong,please check!"
+		echo "PHP Version input was:"$php_version
+		sleep 5
+		exit 1
+	fi
   fi
 fi
 
@@ -82,8 +92,13 @@ echo "============================check files=================================="
 
 echo "Stoping Nginx..."
 /etc/init.d/nginx stop
-echo "Stoping MySQL..."
-/etc/init.d/mysql stop
+if [ "$ismysql" = "no" ]; then
+	echo "Stoping MariaDB..."
+	/etc/init.d/mariadb stop
+else
+	echo "Stoping MySQL..."
+	/etc/init.d/mysql stop
+fi
 echo "Stoping PHP-FPM..."
 /etc/init.d/php-fpm stop
 if [ -s /etc/init.d/memceached ]; then
@@ -93,11 +108,15 @@ fi
 
 rm -rf php-$php_version/
 
-tar zxvf autoconf-2.13.tar.gz
-cd autoconf-2.13/
-./configure --prefix=/usr/local/autoconf-2.13
-make && make install
-cd ../
+if [ -s /usr/local/autoconf-2.13/bin/autoconf ] && [ -s /usr/local/autoconf-2.13/bin/autoheader ]; then
+	echo "check autconf 2.13: OK"
+else
+	tar zxvf autoconf-2.13.tar.gz
+	cd autoconf-2.13/
+	./configure --prefix=/usr/local/autoconf-2.13
+	make && make install
+	cd ../
+fi
 
 ln -s /usr/lib/libevent-1.4.so.2 /usr/local/lib/libevent-1.4.so.2
 ln -s /usr/lib/libltdl.so /usr/lib/libltdl.so.3
@@ -128,7 +147,11 @@ cd php-$php_version/
 wget -c http://soft.vpser.net/web/php/bug/php-5.2.17-max-input-vars.patch
 patch -p1 < php-5.2.17-max-input-vars.patch
 ./buildconf --force
-./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-fastcgi --enable-fpm --enable-force-cgi-redirect --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic
+if [ "$ismysql" = "no" ]; then
+	./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-mysql=/usr/local/mariadb --with-mysqli=/usr/local/mariadb/bin/mysql_config --with-pdo-mysql=/usr/local/mariadb --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex --enable-fastcgi --enable-fpm --enable-force-cgi-redirect --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic
+else
+	./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-pdo-mysql=/usr/local/mysql --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex --enable-fastcgi --enable-fpm --enable-force-cgi-redirect --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic
+fi
 if cat /etc/issue | grep -Eqi '(Debian|Ubuntu)';then
     cd ext/openssl/
     wget -c http://soft.vpser.net/lnmp/ext/debian_patches_disable_SSLv2_for_openssl_1_0_0.patch
@@ -173,7 +196,7 @@ export PHP_AUTOHEADER=/usr/local/autoconf-2.13/bin/autoheader
 echo "Starting install php......"
 tar zxvf php-$php_version.tar.gz
 cd php-$php_version/
-./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --enable-fpm --with-fpm-user=www --with-fpm-group=www --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --disable-fileinfo
+./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --enable-fpm --with-fpm-user=www --with-fpm-group=www --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --disable-fileinfo
 
 make ZEND_EXTRA_LIBS='-liconv'
 make install
@@ -209,6 +232,8 @@ if [ `getconf WORD_BIT` = '32' ] && [ `getconf LONG_BIT` = '64' ] ; then
 		tar zxvf ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64.tar.gz
 		mkdir -p /usr/local/zend/
 		\cp ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64/php-5.4.x/ZendGuardLoader.so /usr/local/zend/ 
+	elif [[ "$php_version" =~ "5.5." ]]; then
+		echo "Current PHP 5.5.* DO NOT SUPPORT Zend Guard Loader!"
 	fi
 else
 	if [[ "$php_version" =~ "5.3." ]]; then
@@ -221,6 +246,8 @@ else
 		tar zxvf ZendGuardLoader-70429-PHP-5.4-linux-glibc23-i386.tar.gz
 		mkdir -p /usr/local/zend/
 		\cp ZendGuardLoader-70429-PHP-5.4-linux-glibc23-i386/php-5.4.x/ZendGuardLoader.so /usr/local/zend/ 
+	elif [[ "$php_version" =~ "5.5." ]]; then
+		echo "Current PHP 5.5.* DO NOT SUPPORT Zend Guard Loader!"
 	fi
 fi
 
@@ -232,6 +259,10 @@ cat >>/usr/local/php/etc/php.ini<<EOF
 
 [Zend Optimizer] 
 zend_extension=/usr/local/zend/ZendGuardLoader.so
+zend_loader.enable=1
+zend_loader.disable_licensing=0
+zend_loader.obfuscation_level_support=3
+zend_loader.license_path=
 EOF
 
 echo "Creating new php-fpm configure file......"
@@ -243,6 +274,11 @@ log_level = notice
 
 [www]
 listen = /tmp/php-cgi.sock
+listen.backlog = -1
+listen.allowed_clients = 127.0.0.1
+listen.owner = www
+listen.group = www
+listen.mode = 0666
 user = www
 group = www
 pm = dynamic
@@ -251,6 +287,8 @@ pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 6
 request_terminate_timeout = 100
+request_slowlog_timeout = 0
+slowlog = var/log/slow.log
 EOF
 
 echo "Copy php-fpm init.d file......"
@@ -286,8 +324,13 @@ fi
 
 echo "Starting Nginx..."
 /etc/init.d/nginx start
-echo "Starting MySQL..."
-/etc/init.d/mysql start
+if [ "$ismysql" = "no" ]; then
+	echo "Starting MariaDB..."
+	/etc/init.d/mariadb start
+else
+	echo "Starting MySQL..."
+	/etc/init.d/mysql start
+fi
 echo "Starting PHP-FPM..."
 /etc/init.d/php-fpm start
 if [ -s /etc/init.d/memceached ]; then

@@ -22,6 +22,11 @@ if [ "$1" != "--help" ]; then
 
 old_php_version=`/usr/local/php/bin/php -r 'echo PHP_VERSION;'`
 #echo $old_php_version
+if [ -s /usr/local/mariadb/bin/mysql ]; then
+	ismysql="no"
+else
+	ismysql="yes"
+fi
 
 #set php version
 
@@ -63,14 +68,19 @@ if [ -s php-$php_version.tar.gz ]; then
   echo "php-$php_version.tar.gz [found]"
   else
   echo "Error: php-$php_version.tar.gz not found!!!download now......"
-  wget -c http://us2.php.net/distributions/php-$php_version.tar.gz
+  wget -c http://www.php.net/distributions/php-$php_version.tar.gz
   if [ $? -eq 0 ]; then
 	echo "Download php-$php_version.tar.gz successfully!"
   else
-	echo "WARNING!May be the php version you input was wrong,please check!"
-	echo "PHP Version input was:"$php_version
-	sleep 5
-	exit 1
+  	wget -c http://museum.php.net/php5/php-$php_version.tar.gz
+  	if [ $? -eq 0 ]; then
+		echo "Download php-$php_version.tar.gz successfully!"
+  	else
+		echo "WARNING!May be the php version you input was wrong,please check!"
+		echo "PHP Version input was:"$php_version
+		sleep 5
+		exit 1
+	fi
   fi
 fi
 echo "============================check files=================================="
@@ -81,13 +91,18 @@ echo "Backup old php version configure files......"
 mkdir -p /root/phpconf
 cp /usr/local/php/etc/php.ini /root/phpconf/php.ini.old.bak
 rm -rf /usr/local/php/
-cp /usr/local/apache/modules/libphp5.so /root/phpconf/
+mv /usr/local/apache/modules/libphp5.so /root/phpconf/
 rm -f /usr/local/apache/modules/libphp5.so
 
 echo "Stoping Nginx..."
 /etc/init.d/nginx stop
-echo "Stoping MySQL..."
-/etc/init.d/mysql stop
+if [ "$ismysql" = "no" ]; then
+	echo "Stoping MariaDB..."
+	/etc/init.d/mariadb stop
+else
+	echo "Stoping MySQL..."
+	/etc/init.d/mysql stop
+fi
 echo "Stoping Apache..."
 /etc/init.d/httpd stop
 if [ -s /etc/init.d/memceached ]; then
@@ -102,10 +117,14 @@ rm -rf php-$php_version/
 fi
 tar zxvf php-$php_version.tar.gz
 cd php-$php_version/
-./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-apxs2=/usr/local/apache/bin/apxs with-libevent-dir --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --disable-fileinfo
+./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-apxs2=/usr/local/apache/bin/apxs --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --disable-fileinfo
 
 rm -f libtool
 cp /usr/local/apache/build/libtool .
+
+if [[ "$php_version" =~ "5.4." ]] || [[ "$php_version" =~ "5.5." ]]; then
+   sed -i 's/preserve-dup-deps/& --tag=CC/' Makefile
+fi
 
 make ZEND_EXTRA_LIBS='-liconv'
 make install
@@ -139,6 +158,8 @@ if [ `getconf WORD_BIT` = '32' ] && [ `getconf LONG_BIT` = '64' ] ; then
 		tar zxvf ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64.tar.gz
 		mkdir -p /usr/local/zend/
 		\cp ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64/php-5.4.x/ZendGuardLoader.so /usr/local/zend/ 
+	elif [[ "$php_version" =~ "5.5." ]]; then
+		echo "Current PHP 5.5.* DO NOT SUPPORT Zend Guard Loader!"
 	fi
 else
 	if [[ "$php_version" =~ "5.3." ]]; then
@@ -151,6 +172,8 @@ else
 		tar zxvf ZendGuardLoader-70429-PHP-5.4-linux-glibc23-i386.tar.gz
 		mkdir -p /usr/local/zend/
 		\cp ZendGuardLoader-70429-PHP-5.4-linux-glibc23-i386/php-5.4.x/ZendGuardLoader.so /usr/local/zend/ 
+	elif [[ "$php_version" =~ "5.5." ]]; then
+		echo "Current PHP 5.5.* DO NOT SUPPORT Zend Guard Loader!"
 	fi
 fi
 
@@ -162,12 +185,21 @@ cat >>/usr/local/php/etc/php.ini<<EOF
 
 [Zend Optimizer] 
 zend_extension=/usr/local/zend/ZendGuardLoader.so
+zend_loader.enable=1
+zend_loader.disable_licensing=0
+zend_loader.obfuscation_level_support=3
+zend_loader.license_path=
 EOF
 
 echo "Starting Nginx..."
 /etc/init.d/nginx start
-echo "Starting MySQL..."
-/etc/init.d/mysql start
+if [ "$ismysql" = "no" ]; then
+	echo "Starting MariaDB..."
+	/etc/init.d/mariadb start
+else
+	echo "Starting MySQL..."
+	/etc/init.d/mysql start
+fi
 echo "Starting Apache..."
 /etc/init.d/httpd start
 if [ -s /etc/init.d/memceached ]; then

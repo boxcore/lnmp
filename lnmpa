@@ -9,7 +9,7 @@ if [ $(id -u) != "0" ]; then
 fi
 
 printf "=========================================================================\n"
-printf "Manager for LNMPA V1.0  ,  Written by Licess \n"
+printf "Manager for LNMPA V1.1  ,  Written by Licess \n"
 printf "=========================================================================\n"
 printf "LNMPA is a tool to auto-compile & install Nginx+MySQL+PHP+Apache on Linux \n"
 printf "This script is a tool to Manage status of LNMPA \n"
@@ -18,14 +18,7 @@ printf "\n"
 printf "Usage: /root/lnmpa {start|stop|reload|restart|kill|status}\n"
 printf "=========================================================================\n"
 
-NGINXNAME=nginx
-NGINXCONFIGFILE=/usr/local/nginx/conf/$NGINXNAME.conf
-NGINXPIDFILE=/usr/local/nginx/logs/$NGINXNAME.pid
-NGINXDAEMON=/usr/local/nginx/sbin/$NGINXNAME
-HOSTNAME=`hostname`
-MYSQLPIDFILE=/usr/local/mysql/var/$HOSTNAME.pid
-APACHENAME=httpd
-APACHEPIDFILE=/usr/local/apache/logs/$APACHENAME.pid
+NGINXPIDFILE=/usr/local/nginx/logs/nginx.pid
 
 function_start()
 {
@@ -66,14 +59,11 @@ function_kill()
 
 function_status()
 {
-    if [ -f $NGINXPIDFILE ]; then
-      printf "Nginx is runing!\n"
-    else
-	printf "Nginx is stop!\n"
-    fi
+	/etc/init.d/nginx status
 
-/etc/init.d/httpd status
-/etc/init.d/mysql status
+	/etc/init.d/httpd status
+	
+	/etc/init.d/mysql status
 }
 
 case "$1" in

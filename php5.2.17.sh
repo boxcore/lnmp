@@ -17,10 +17,15 @@ echo ""
 echo "For more information please visit http://www.lnmp.org/"
 echo "========================================================================="
 cur_dir=$(pwd)
+if [ -s /usr/local/mariadb/bin/mysql ]; then
+	ismysql="no"
+else
+	ismysql="yes"
+fi
 
-cur_php_version=`/usr/local/php/bin/php -v`
+cur_php_version=`/usr/local/php/bin/php -r 'echo PHP_VERSION;'`
 echo "Current PHP Version:$cur_php_version"
-	if [[ "$cur_php_version" =~ "PHP 5.2." ]]; then
+	if [[ "$cur_php_version" =~ "5.2." ]]; then
 	   echo "Do NOT need to install PHP 5.2.17!"
 	   exit 1
 	fi
@@ -99,7 +104,11 @@ cd php-5.2.17/
 wget -c http://soft.vpser.net/web/php/bug/php-5.2.17-max-input-vars.patch
 patch -p1 < php-5.2.17-max-input-vars.patch
 ./buildconf --force
-./configure --prefix=/usr/local/php52 --with-config-file-path=/usr/local/php52/etc --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-fastcgi --enable-fpm --enable-force-cgi-redirect --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic
+if [ "$ismysql" = "no" ]; then
+	./configure --prefix=/usr/local/php52 --with-config-file-path=/usr/local/php52/etc --with-mysql=/usr/local/mariadb --with-mysqli=/usr/local/mariadb/bin/mysql_config --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex --enable-fastcgi --enable-fpm --enable-force-cgi-redirect --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic
+else
+	./configure --prefix=/usr/local/php52 --with-config-file-path=/usr/local/php52/etc --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex --enable-fastcgi --enable-fpm --enable-force-cgi-redirect --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic
+fi
 if cat /etc/issue | grep -Eqi '(Debian|Ubuntu)';then
     cd ext/openssl/
     wget -c http://soft.vpser.net/lnmp/ext/debian_patches_disable_SSLv2_for_openssl_1_0_0.patch
@@ -108,6 +117,8 @@ if cat /etc/issue | grep -Eqi '(Debian|Ubuntu)';then
 fi
 make ZEND_EXTRA_LIBS='-liconv'
 make install
+
+cp php.ini-dist /usr/local/php52/etc/php.ini
 
 cd $cur_dir/php-5.2.17/ext/pdo_mysql/
 /usr/local/php52/bin/phpize

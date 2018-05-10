@@ -8,7 +8,7 @@ fi
 
 clear
 echo "========================================================================="
-echo "Add Virtual Host for LNMPA V1.0  ,  Written by Licess "
+echo "Add Virtual Host for LNMPA,  Written by Licess "
 echo "========================================================================="
 echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP+Apache on Linux "
 echo "This script is a tool to add virtual host for Nginx And Apache "
@@ -83,10 +83,7 @@ if [ "$1" != "--help" ]; then
 	  if [ "$al_name" = "" ]; then
 		al_name="$domain"
 	  fi
-	  alf="log_format  $al_name  '\$remote_addr - \$remote_user [\$time_local] \"\$request\" '
-             '\$status \$body_bytes_sent \"\$http_referer\" '
-             '\"\$http_user_agent\" \$http_x_forwarded_for';"
-	  al="access_log  /home/wwwlogs/$al_name.log  $al_name;"
+	  al="access_log  /home/wwwlogs/$al_name.log  access;"
 	echo "==========================="
 	echo You access log file="$al_name.log"
 	echo "==========================="
@@ -119,10 +116,10 @@ chmod -R 755 $vhostdir
 chown -R www:www $vhostdir
 
 cat >/usr/local/nginx/conf/vhost/$domain.conf<<eof
-$alf
 server
 	{
-		listen       80;
+		listen 80;
+		#listen [::]:80;
 		server_name $domain$moredomainame;
 		index index.html index.htm index.php default.html default.htm default.php;
 		root  $vhostdir;
@@ -137,7 +134,7 @@ server
 			include proxy.conf;
 			}
 
-		location ~ .*\.(php|php5)?$
+		location ~ [^/]\.php(/|$)
 			{
 				proxy_pass http://127.0.0.1:88;
 				include proxy.conf;
@@ -187,7 +184,7 @@ echo "Restart Apache......"
 /etc/init.d/httpd restart
 
 echo "========================================================================="
-echo "Add Virtual Host for LNMP V0.9  ,  Written by Licess "
+echo "Add Virtual Host for LNMP,  Written by Licess "
 echo "========================================================================="
 echo "For more information please visit http://www.lnmp.org/"
 echo ""

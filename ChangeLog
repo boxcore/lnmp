@@ -1,4 +1,40 @@
 更新记录
+
+2014年6月1日发布LNMP 1.1
+
+调整优化脚本安装脚本；
+安装时增加MariaDB选项；
+增加MySQL升级脚本 upgrade_mysql.sh；
+增加MySQL升级到MariaDB脚本 upgrade_mysql2mariadb.sh；
+增加MariaDB升级脚本 upgrade_mariadb.sh；
+增加Redis安装脚本 redis.sh；
+增加OPcache安装脚本 opcache.sh；
+增加MySQL/MariaDB root密码重置脚本；
+添加pathinfo支持，去掉include pathinfo的#，在try_files前加#重启nginx即可使用；
+重写nginx init.d脚本；
+优化PHP升级脚本；
+优化LNMP升级到LNMPA脚本，PHP可选PHP5.2或5.3,调整编译参数和配置文件；
+优化LNMPA PHP升级脚本，支持5.4,5.5；
+优化Xcache安装脚本，增加xcache管理界面；
+优化Memcached安装脚本；
+优化其他相关脚本使其支持MySQL的同时可支持MariaDB；
+优化Nginx部分配置；
+优化Pureftpd安装脚本；
+优化Nginx配置文件，增加部分参数，去掉注释即可使用；
+优化PHP-FPM参数，增加slowlog慢日志选项，可修改request_slowlog_timeout参数启用；
+更新wordpress伪静态；
+更新Nginx状态页为http://IP/nginx_status；
+更新Nginx至1.6.0；
+更新MySQL至5.1.73,5.5.37；
+更新PHP至5.3.28；
+更新Xcache至3.1.0；
+更新ImageMagick至6.8.8-9；
+更新phpMyAdmin至4.2.2；
+去除fcgi.conf，使用nginx自带的fastcgi.conf；
+去除Nginx日志多余配置，采用统一日志名称；
+去除PHP编译参数--with-curlwrappers；
+
+
 2013年6月1日发布LNMP 1.0
 
 调整优化安装脚本，自动记录安装日志至/root/lnmp-install.log安装失败时可以提供此文件；

@@ -9,14 +9,14 @@ if [ $(id -u) != "0" ]; then
 fi
 
 clear
-printf "=======================================================================\n"
-printf "Install eAcesselerator for LNMP V1.0  ,  Written by Licess \n"
-printf "=======================================================================\n"
-printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
-printf "This script is a tool to install eAccelerator for lnmp \n"
-printf "\n"
-printf "For more information please visit http://www.lnmp.org \n"
-printf "=======================================================================\n"
+echo "======================================================================="
+echo "Install eAcesselerator for LNMP  ,  Written by Licess "
+echo "======================================================================="
+echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
+echo "This script is a tool to install eAccelerator for lnmp "
+echo ""
+echo "For more information please visit http://www.lnmp.org "
+echo "======================================================================="
 cur_dir=$(pwd)
 
 	ver="old"
@@ -55,7 +55,7 @@ cur_dir=$(pwd)
 	echo "Press any key to start...or Press Ctrl+c to cancel"
 	char=`get_char`
 
-printf "=========================== install eaccelerator ======================\n"
+echo "=========================== install eaccelerator ======================"
 
 if [ -s /usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/eaccelerator.so ]; then
 	rm -f /usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/eaccelerator.so
@@ -63,6 +63,8 @@ elif [ -s /usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/eaccelerat
 	rm -f /usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/eaccelerator.so
 elif [ -s /usr/local/php/lib/php/extensions/no-debug-non-zts-20100525/eaccelerator.so ]; then
 	rm -f /usr/local/php/lib/php/extensions/no-debug-non-zts-20100525/eaccelerator.so
+elif [ -s /usr/local/php/lib/php/extensions/no-debug-non-zts-20121212/eaccelerator.so ]; then
+	rm -f /usr/local/php/lib/php/extensions/no-debug-non-zts-20121212/eaccelerator.so
 fi
 
 cur_php_version=`/usr/local/php/bin/php -v`
@@ -72,6 +74,13 @@ elif [[ "$cur_php_version" =~ "PHP 5.3." ]]; then
    zend_ext="/usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/eaccelerator.so"
 elif [[ "$cur_php_version" =~ "PHP 5.4." ]]; then
    zend_ext="/usr/local/php/lib/php/extensions/no-debug-non-zts-20100525/eaccelerator.so"
+elif [[ "$cur_php_version" =~ "PHP 5.5." ]]; then
+   zend_ext="/usr/local/php/lib/php/extensions/no-debug-non-zts-20121212/eaccelerator.so"
+else
+	echo "Error: can't get php version!"
+	echo "Maybe your php was didn't install or php configuration file has errors.Please check."
+	sleep 3
+	exit 1
 fi
 
 #Install eaccelerator 0.9.5.3
@@ -80,10 +89,10 @@ if [ -s eaccelerator-0.9.5.3 ]; then
 	rm -rf eaccelerator-0.9.5.3/
 fi
 
-if [[ "$cur_php_version" =~ "PHP 5.3." ]] || [[ "$cur_php_version" =~ "PHP 5.4." ]]; then
-	echo "PHP 5.3.* or PHP 5.4.* Can't install eaccelerator 0.9.5.3!"
+if [[ "$cur_php_version" =~ "PHP 5.3." ]] || [[ "$cur_php_version" =~ "PHP 5.4." ]] || [[ "$cur_php_version" =~ "PHP 5.5." ]]; then
+	echo "PHP 5.3.* , PHP 5.4.* , PHP 5.5.* Can't install eaccelerator 0.9.5.3!"
 	echo "PHP 5.3.* please input new or dev !"
-	echo "PHP 5.4.* please input dev !"
+	echo "PHP 5.4.* and 5.5.* please input dev !"
 	exit 1 
 fi
 
@@ -103,9 +112,9 @@ if [ -s eaccelerator-0.9.6.1 ]; then
 rm -rf eaccelerator-0.9.6.1/
 fi
 
-if [[ "$cur_php_version" =~ "PHP 5.4." ]]; then
-	echo "PHP 5.4.* Can't install eaccelerator 0.9.5.3!"
-	echo "PHP 5.4.* please input dev !"
+if [[ "$cur_php_version" =~ "PHP 5.4." ]] || [[ "$cur_php_version" =~ "PHP 5.5." ]]; then
+	echo "PHP 5.4.* Can't install eaccelerator 0.9.6.1!"
+	echo "PHP 5.4.* and 5.5.* please input dev !"
 	exit 1 
 fi
 
@@ -183,13 +192,13 @@ fi
 
 rm ea.ini
 
-printf "===================== install eaccelerator completed ===================\n"
-printf "Install eAccelerator completed,enjoy it!\n"
-printf "=======================================================================\n"
-printf "Install eAcesselerator for LNMP V1.0  ,  Written by Licess \n"
-printf "=======================================================================\n"
-printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
-printf "This script is a tool to install eAccelerator for lnmp \n"
-printf "\n"
-printf "For more information please visit http://www.lnmp.org \n"
-printf "=======================================================================\n"
+echo "===================== install eaccelerator completed ==================="
+echo "Install eAccelerator completed,enjoy it!"
+echo "======================================================================="
+echo "Install eAcesselerator for LNMP  ,  Written by Licess "
+echo "======================================================================="
+echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
+echo "This script is a tool to install eAccelerator for lnmp "
+echo ""
+echo "For more information please visit http://www.lnmp.org "
+echo "======================================================================="

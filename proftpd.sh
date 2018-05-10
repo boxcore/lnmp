@@ -84,6 +84,7 @@ MaxInstances                    30
 User                            nobody
 Group                           nogroup
 
+PassivePorts                    20000 30000
 # To cause every FTP user to be "jailed" (chrooted) into their home
 # directory, uncomment this line.
 
@@ -122,6 +123,7 @@ cat /etc/issue | grep -Eqi '(Debian|Ubuntu)' && update-rc.d -f proftpd defaults;
 if [ -s /sbin/iptables ]; then
 /sbin/iptables -I INPUT -p tcp --dport 21 -j ACCEPT
 /sbin/iptables -I INPUT -p tcp --dport 20 -j ACCEPT
+/sbin/iptables -I INPUT -p tcp --dport 20000:30000 -j ACCEPT
 /sbin/iptables-save
 fi
 

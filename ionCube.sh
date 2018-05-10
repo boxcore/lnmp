@@ -9,14 +9,14 @@ if [ $(id -u) != "0" ]; then
 fi
 
 clear
-printf "=======================================================================\n"
-printf "Install ionCube for LNMP V1.0  ,  Written by Licess \n"
-printf "=======================================================================\n"
-printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
-printf "This script is a tool to install eAccelerator for lnmp \n"
-printf "\n"
-printf "For more information please visit http://www.lnmp.org \n"
-printf "=======================================================================\n"
+echo "======================================================================="
+echo "Install ionCube for LNMP  ,  Written by Licess "
+echo "======================================================================="
+echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
+echo "This script is a tool to install eAccelerator for lnmp "
+echo ""
+echo "For more information please visit http://www.lnmp.org "
+echo "======================================================================="
 cur_dir=$(pwd)
 
 	get_char()
@@ -33,7 +33,7 @@ cur_dir=$(pwd)
 	echo "Press any key to start install ionCube..."
 	char=`get_char`
 
-printf "=========================== install eaccelerator ======================\n"
+echo "=========================== install eaccelerator ======================"
 if [ `getconf WORD_BIT` = '32' ] && [ `getconf LONG_BIT` = '64' ] ; then
     cd /usr/local/
 	wget -c http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
@@ -54,6 +54,8 @@ elif [[ "$cur_php_version" =~ "PHP 5.3." ]]; then
    zend_ext="/usr/local/ioncube/ioncube_loader_lin_5.3.so"
 elif [[ "$cur_php_version" =~ "PHP 5.4." ]]; then
    zend_ext="/usr/local/ioncube/ioncube_loader_lin_5.4.so"
+elif [[ "$cur_php_version" =~ "PHP 5.5." ]]; then
+   zend_ext="/usr/local/ioncube/ioncube_loader_lin_5.5.so"
 fi
 
 cat >ionCube.ini<<EOF
@@ -75,14 +77,14 @@ echo "Restarting php-fpm......"
 fi
 
 rm ionCube.ini
-printf "===================== install ionCube completed ===================\n"
+echo "===================== install ionCube completed ==================="
 
-printf "Install ionCube completed,enjoy it!\n"
-printf "=======================================================================\n"
-printf "Install ionCube for LNMP V1.0  ,  Written by Licess \n"
-printf "=======================================================================\n"
-printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
-printf "This script is a tool to install eAccelerator for lnmp \n"
-printf "\n"
-printf "For more information please visit http://www.lnmp.org \n"
-printf "=======================================================================\n"
+echo "Install ionCube completed,enjoy it!"
+echo "======================================================================="
+echo "Install ionCube for LNMP  ,  Written by Licess "
+echo "======================================================================="
+echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
+echo "This script is a tool to install eAccelerator for lnmp "
+echo ""
+echo "For more information please visit http://www.lnmp.org "
+echo "======================================================================="

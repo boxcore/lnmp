@@ -9,7 +9,7 @@ if [ $(id -u) != "0" ]; then
 fi
 clear
 printf "=========================================================================\n"
-printf "Pureftpd for LNMP V1.0  ,  Written by Licess \n"
+printf "Pureftpd for LNMP,  Written by Licess \n"
 printf "=========================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install pureftpd for lnmp \n"
@@ -20,6 +20,11 @@ printf "Usage: ./pureftpd.sh \n"
 printf "=========================================================================\n"
 cur_dir=$(pwd)
 
+if [ -s /usr/local/mariadb/bin/mysql ]; then
+	ismysql="no"
+else
+	ismysql="yes"
+fi
 #set mysql root password
 
 	mysqlrootpwd=""
@@ -74,10 +79,20 @@ cur_dir=$(pwd)
 	char=`get_char`
 
 echo "Start download files..."
-wget -c http://soft.vpser.net/ftp/pure-ftpd/pure-ftpd-1.0.35.tar.gz
+wget -c http://soft.vpser.net/ftp/pure-ftpd/pure-ftpd-1.0.36.tar.gz
 wget -c http://soft.vpser.net/ftp/pure-ftpd/User_manager_for-PureFTPd_v2.1_CN.zip
 
-cp /usr/local/mysql/lib/mysql/*.* /usr/lib/
+if [ "$ismysql" = "no" ]; then
+	\cp /usr/local/mariadb/lib/* /usr/lib/
+elif [ "$ismysql" = "yes" ]; then
+	mysql_version=`/usr/local/mysql/bin/mysql -V | awk '{print $5}' | tr -d ","`
+	if [[ "$mysql_version" =~ "5.1." ]]; then
+		\cp /usr/local/mysql/lib/mysql/*.* /usr/lib/
+	else
+		\cp /usr/local/mysql/lib/* /usr/lib/
+	fi
+fi
+
 if [ -s /var/lib/mysql/mysql.sock ]; then
 rm -f /var/lib/mysql/mysql.sock
 fi
@@ -85,24 +100,13 @@ mkdir /var/lib/mysql
 ln -s /tmp/mysql.sock /var/lib/mysql/mysql.sock
 
 echo "Start install pure-ftpd..."
-tar zxvf pure-ftpd-1.0.35.tar.gz
-cd pure-ftpd-1.0.35/
-./configure --prefix=/usr/local/pureftpd CFLAGS=-O2 \
---with-mysql=/usr/local/mysql \
---with-quotas \
---with-cookie \
---with-virtualhosts \
---with-virtualroot \
---with-diraliases \
---with-sysquotas \
---with-ratios \
---with-altlog \
---with-paranoidmsg \
---with-shadow \
---with-welcomemsg  \
---with-throttling \
---with-uploadscript \
---with-language=simplified-chinese
+tar zxvf pure-ftpd-1.0.36.tar.gz
+cd pure-ftpd-1.0.36/
+if [ "$ismysql" = "no" ]; then
+	./configure --prefix=/usr/local/pureftpd CFLAGS=-O2 --with-mysql=/usr/local/mariadb --with-quotas --with-cookie --with-virtualhosts --with-diraliases --with-sysquotas --with-ratios --with-altlog --with-paranoidmsg --with-shadow --with-welcomemsg --with-throttling --with-uploadscript --with-language=english --with-rfc2640
+else
+	./configure --prefix=/usr/local/pureftpd CFLAGS=-O2 --with-mysql=/usr/local/mysql --with-quotas --with-cookie --with-virtualhosts --with-diraliases --with-sysquotas --with-ratios --with-altlog --with-paranoidmsg --with-shadow --with-welcomemsg --with-throttling --with-uploadscript --with-language=english --with-rfc2640
+fi
 
 make && make install
 
@@ -120,7 +124,14 @@ sed -i 's/mysqlftppwd/'$mysqlftppwd'/g' /tmp/script.mysql
 sed -i 's/ftpmanagerpwd/'$ftpmanagerpwd'/g' /tmp/script.mysql
 
 echo "Import pureftpd database..."
-/usr/local/mysql/bin/mysql -u root -p$mysqlrootpwd -h localhost < /tmp/script.mysql
+if [ "$ismysql" = "no" ]; then
+	/usr/local/mariadb/bin/mysql -u root -p$mysqlrootpwd -h localhost < /tmp/script.mysql
+elif [ "$ismysql" = "yes" ]; then
+	/usr/local/mysql/bin/mysql -u root -p$mysqlrootpwd -h localhost < /tmp/script.mysql
+else
+	echo "MySQL or MariaDB NOT FOUND!Please check."
+	exit 1
+fi
 
 rm -f /tmp/script.mysql
 
@@ -134,12 +145,9 @@ chown www -R /home/wwwroot/default/ftp/
 echo "Modify parameters of GUI User manager for PureFTPd..."
 sed -i 's/English/Chinese/g' /home/wwwroot/default/ftp/config.php
 sed -i 's/tmppasswd/'$mysqlftppwd'/g' /home/wwwroot/default/ftp/config.php
+sed -i 's/127.0.0.1/localhost/g' /home/wwwroot/default/ftp/config.php
 sed -i 's/myipaddress.com/localhost/g' /home/wwwroot/default/ftp/config.php
 mv /home/wwwroot/default/ftp/install.php /home/wwwroot/default/ftp/install.php.bak
-
-cd $cur_dir
-cp pureftpd /root/pureftpd
-chmod +x /root/pureftpd
 
 wget -c http://soft.vpser.net/lnmp/ext/init.d.pureftpd
 cp init.d.pureftpd /etc/init.d/pureftpd
@@ -154,6 +162,7 @@ fi
 if [ -s /sbin/iptables ]; then
 /sbin/iptables -I INPUT -p tcp --dport 21 -j ACCEPT
 /sbin/iptables -I INPUT -p tcp --dport 20 -j ACCEPT
+/sbin/iptables -I INPUT -p tcp --dport 20000:30000 -j ACCEPT
 /sbin/iptables-save
 fi
 
@@ -167,7 +176,7 @@ printf "Now you enter http://youdomain.com/ftp/ in you Web Browser to manager FT
 printf "Your password of User manager was:$ftpmanagerpwd\n"
 printf "Your password of mysql ftp user was:$mysqlftppwd\n"
 printf "=======================================================================\n"
-printf "Install Pure-FTPd for LNMP V1.0  ,  Written by Licess \n"
+printf "Install Pure-FTPd for LNMP,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install Pure-FTPd for lnmp \n"

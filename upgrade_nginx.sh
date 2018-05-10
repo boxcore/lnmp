@@ -20,6 +20,11 @@ echo "========================================================================="
 nv=`/usr/local/nginx/sbin/nginx -v 2>&1`
 old_nginx_version=`echo $nv | cut -c22-`
 #echo $old_nginx_version
+if [ -s /usr/local/mariadb/bin/mysql ]; then
+	ismysql="no"
+else
+	ismysql="yes"
+fi
 
 if [ "$1" != "--help" ]; then
 
@@ -70,8 +75,13 @@ if [ -s nginx-$nginx_version.tar.gz ]; then
   fi
 fi
 echo "============================check files=================================="
-echo "Stoping MySQL..."
-/etc/init.d/mysql stop
+if [ "$ismysql" = "no" ]; then
+	echo "Stoping MariaDB..."
+	/etc/init.d/mariadb stop
+else
+	echo "Stoping MySQL..."
+	/etc/init.d/mysql stop
+fi
 echo "Stoping PHP-FPM..."
 /etc/init.d/php-fpm stop
 if [ -s /etc/init.d/memceached ]; then
@@ -98,10 +108,20 @@ cd ../
 echo "Restarting Nginx..."
 /etc/init.d/nginx restart
 
-echo "Starting MySQL..."
-/etc/init.d/mysql start
-echo "Starting PHP-FPM..."
-/etc/init.d/php-fpm start
+if [ "$ismysql" = "no" ]; then
+	echo "Starting MariaDB..."
+	/etc/init.d/mariadb start
+else
+	echo "Starting MySQL..."
+	/etc/init.d/mysql start
+fi
+if [ -s /etc/init.d/httpd ] && [ -s /usr/local/apache ]; then
+echo "Restarting Apache......"
+/etc/init.d/httpd -k restart
+else
+echo "Restarting php-fpm......"
+/etc/init.d/php-fpm restart
+fi
 if [ -s /etc/init.d/memceached ]; then
   echo "Starting Memcached..."
   /etc/init.d/memcacehd start
