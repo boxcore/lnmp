@@ -1,34 +1,45 @@
 #!/bin/bash
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
 
 # Check if user is root
 if [ $(id -u) != "0" ]; then
-    echo "Error: You must be root to run this script, use sudo sh $0"
+    echo "Error: You must be root to run this script, please use root to install lnmp"
     exit 1
 fi
 
 clear
-echo "========================================================================="
-echo "LNMP V0.3 for CentOS/RadHat Linux VPS  Written by Licess"
-echo "========================================================================="
-echo "A tool to auto-compile & install Nginx+MySQL+PHP on Linux "
-echo "For more information please visit http://blog.licess.cn/lnmp/"
-echo ""
-echo ""
-echo "The path of some dirs:"
-echo "mysql dir:   /usr/local/mysql"
-echo "php dir:     /usr/local/php"
-echo "nginx dir:   /usr/local/nginx"
-echo "web dir      /home/wwwroot"
-echo ""
-echo "========================================================================="
+printf "=======================================================================\n"
+printf "Install eAcesselerator for LNMP V0.4  ,  Written by Licess \n"
+printf "=======================================================================\n"
+printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
+printf "This script is a tool to install eAccelerator for lnmp \n"
+printf "\n"
+printf "For more information please visit http://www.lnmp.org \n"
+printf "=======================================================================\n"
+cur_dir=$(pwd)
 
-echo "============================eaccelerator install======================"
+	get_char()
+	{
+	SAVEDSTTY=`stty -g`
+	stty -echo
+	stty cbreak
+	dd if=/dev/tty bs=1 count=1 2> /dev/null
+	stty -raw
+	stty echo
+	stty $SAVEDSTTY
+	}
+	echo ""
+	echo "Press any key to start install eAccelerator..."
+	char=`get_char`
+
+printf "=========================== install eaccelerator ======================\n"
 
 wget -c http://soft.vpser.net/web/eaccelerator/eaccelerator-0.9.5.3.tar.bz2
 tar jxvf eaccelerator-0.9.5.3.tar.bz2
 cd eaccelerator-0.9.5.3/
 /usr/local/php/bin/phpize
-./configure --enable-eaccelerator=shared --with-php-config=/usr/local/php/bin/php-config
+./configure --enable-eaccelerator=shared --with-php-config=/usr/local/php/bin/php-config --with-eaccelerator-shared-memory
 make
 make install
 cd ../
@@ -58,24 +69,15 @@ EOF
 echo "Reload php-fpm"
 /usr/local/php/sbin/php-fpm reload
 
-echo "============================eaccelerator install finished======================"
+printf "===================== install eaccelerator finished ===================\n"
 
 clear
-echo "========================================================================="
-echo "LNMP V0.3 for CentOS/RadHat Linux VPS  Written by Licess "
-echo "========================================================================="
-echo ""
-echo "For more information please visit http://blog.licess.cn/lnmp/"
-echo ""
-echo "run nginx+php-cgi: /root/run.sh"
-echo "default mysql root password:root"
-echo "phpinfo test: http://domain.name/phpinfo.php"
-echo "phpMyAdmin test: http://domain.name/phpmyadmin"
-echo "Prober : http://domain.name/prober.php"
-echo "The path of some dirs:"
-echo "mysql dir:   /usr/local/mysql"
-echo "php dir:     /usr/local/php"
-echo "nginx dir:   /usr/local/nginx"
-echo "web dir      /home/wwwroot"
-echo ""
-echo "========================================================================="
+printf "Install eAccelerator finished,enjoy it!"
+printf "=======================================================================\n"
+printf "Install eAcesselerator for LNMP V0.4  ,  Written by Licess \n"
+printf "=======================================================================\n"
+printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
+printf "This script is a tool to install eAccelerator for lnmp \n"
+printf "\n"
+printf "For more information please visit http://www.lnmp.org \n"
+printf "=======================================================================\n"

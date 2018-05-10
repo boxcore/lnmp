@@ -8,11 +8,11 @@ fi
 
 clear
 echo "========================================================================="
-echo "LNMP V0.3 for CentOS/RadHat Linux VPS  Written by Licess"
+echo "LNMP V0.4 for CentOS/RadHat Linux VPS  Written by Licess"
 echo "========================================================================="
 echo "A tool to auto-compile & install Nginx+MySQL+PHP on Linux "
-echo "For more information please visit http://blog.licess.cn/lnmp/"
 echo ""
+echo "For more information please visit http:/www.lnmp.org/"
 echo ""
 echo "The path of some dirs:"
 echo "mysql dir:   /usr/local/mysql"
@@ -23,33 +23,43 @@ echo ""
 echo "========================================================================="
 
 echo ""
-echo "starting uninstall LNMP now , please wait ..."
-echo ""
 echo "Please backup your mysql data!!!!!"
 
-rm -rf /usr/local/nginx
-rm -rf /usr/local/mysql
+	get_char()
+	{
+	SAVEDSTTY=`stty -g`
+	stty -echo
+	stty cbreak
+	dd if=/dev/tty bs=1 count=1 2> /dev/null
+	stty -raw
+	stty echo
+	stty $SAVEDSTTY
+	}
+	echo ""
+	echo "Press any key to start uninstall LNMP , please wait ......"
+	char=`get_char`
+
+cd php-5.2.10/
+make uninstall
 rm -rf /usr/local/php
+
+cd nginx-0.7.65/
+make uninstall
+rm -rf /usr/local/nginx
+
+cd mysql-5.1.44/
+make uninstall
+rm -rf /usr/local/mysql
+
 rm -rf /usr/local/zend
 
 echo "Lnmp Uninstall completed."
 
-clear
 echo "========================================================================="
-echo "LNMP V0.3 for CentOS/RadHat Linux VPS  Written by Licess "
+echo "LNMP V0.4 for CentOS/RadHat Linux VPS  Written by Licess "
 echo "========================================================================="
+echo "A tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo ""
-echo "For more information please visit http://blog.licess.cn/lnmp/"
-echo ""
-echo "run nginx+php-cgi: /root/run.sh"
-echo "default mysql root password:root"
-echo "phpinfo test: http://domain.name/phpinfo.php"
-echo "phpMyAdmin test: http://domain.name/phpmyadmin"
-echo "Prober : http://domain.name/prober.php"
-echo "The path of some dirs:"
-echo "mysql dir:   /usr/local/mysql"
-echo "php dir:     /usr/local/php"
-echo "nginx dir:   /usr/local/nginx"
-echo "web dir      /home/wwwroot"
+echo "For more information please visit http://www.lnmp.org/"
 echo ""
 echo "========================================================================="

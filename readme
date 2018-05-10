@@ -1,0 +1,56 @@
+					LNMP一键安装包 - Readme
+
+LNMP一键安装包是什么?
+_____________________
+
+
+LNMP一键安装包是一个用Linux Shell编写的可以为CentOS/RadHat、Debian/Ubuntu VPS(VDS)或独立主机安装LNMP(Nginx、MySQL、PHP、phpMyAdmin)生产环境的Shell程序。
+
+作者:licess <www@lnmp.org>
+--------------------------------------------------------------------------------
+
+
+
+安装
+_____
+
+wget http://soft.vpser.net/lnmp/lnmp0.4.tar.gz
+tar zxvf lnmp0.4.tar.gz
+cd lnmp0.4/
+
+CentOS/RadHat执行：
+./centos.sh
+
+Debian/Ubuntu执行：
+./debian.sh
+
+LNMP状态管理： /root/lnmp {start|stop|reload|restart|kill|status}
+PureFTPd状态管理 /root/pureftpd {start|stop|restart|kill|status}
+phpinfo : http://$domain/phpinfo.php
+phpMyAdmin : http://$domain/phpmyadmin/
+探针 : http://$domain/p.php"
+
+LNMP相关目录：
+mysql :   /usr/local/mysql
+php :     /usr/local/php
+nginx :   /usr/local/nginx
+网站目录 :     /home/wwwroot
+
+技术支持
+————————
+
+作者技术支持邮箱：www@lnmp.org
+技术支持论坛：http://bbs.vpser.net/forum-25-1.html （注册需注明原因，人工审核。）
+
+================================================================================
+2009年11月17日
+添加虚拟主机添加程序
+
+2008年11月15日
+发布LNMP 0.3
+
+2009年3月2日
+发布LNMP 0.2
+
+2009年1月19日
+发布LNMP 0.1

@@ -1,0 +1,8 @@
+ChangeLOg
+
+LNMP 0.4
+
+添加LNMP状态管理工具
+增加Suhosin
+重新添加vsftpd 
+pcre-7.9升级到pcre-8.01

@@ -1,4 +1,6 @@
 #!/bin/bash
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
 
 # Check if user is root
 if [ $(id -u) != "0" ]; then
@@ -8,24 +10,18 @@ fi
 
 clear
 echo "========================================================================="
-echo "LNMP V0.3 for CentOS/RadHat Linux VPS  Written by Licess"
+echo "LNMP V0.4 for CentOS/RadHat Linux VPS  Written by Licess"
 echo "========================================================================="
 echo "A tool to auto-compile & install Nginx+MySQL+PHP on Linux "
-echo "For more information please visit http://blog.licess.cn/lnmp/"
 echo ""
-echo ""
-echo "The path of some dirs:"
-echo "mysql dir:   /usr/local/mysql"
-echo "php dir:     /usr/local/php"
-echo "nginx dir:   /usr/local/nginx"
-echo "web dir      /home/wwwroot"
-echo ""
+echo "For more information please visit http://www.lnmp.org/"
 echo "========================================================================="
 cur_dir=$(pwd)
 
 if [ "$1" != "--help" ]; then
 
 
+#set main domain name
 
 	domain="www.lnmp.org"
 	echo "Please input domain:"
@@ -36,6 +32,22 @@ if [ "$1" != "--help" ]; then
 	echo "==========================="
 
 	echo domain="$domain"
+
+	echo "==========================="
+
+#set mysql root password
+
+	echo "==========================="
+
+	mysqlrootpwd="root"
+	echo "Please input the root password of mysql:"
+	read -p "(Default password: root):" mysqlrootpwd
+	if [ "$mysqlrootpwd" = "" ]; then
+		mysqlrootpwd="root"
+	fi
+	echo "==========================="
+
+	echo mysqlrootpwd="$mysqlrootpwd"
 
 	echo "==========================="
 	get_char()
@@ -52,20 +64,130 @@ if [ "$1" != "--help" ]; then
 	echo "Press any key to start..."
 	char=`get_char`
 
+rpm -qa|grep  httpd
+rpm -e httpd
+rpm -qa|grep mysql
+rpm -e mysql
+rpm -qa|grep php
+rpm -e php
+
+yum -y install yum-fastestmirror
 yum -y remove httpd
 yum -y update
-yum -y install patch make gcc gcc-c++ gcc-g77 flex bison
+yum -y install patch make gcc gcc-c++ gcc-g77 flex bison file
 yum -y install libtool libtool-libs autoconf kernel-devel
-yum -y install libjpeg libjpeg-devel libpng libpng-devel
+yum -y install libjpeg libjpeg-devel libpng libpng-devel libpng10 libpng10-devel gd gd-devel
 yum -y install freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel
-yum -y install glib2 glib2-devel bzip2
-yum -y install bzip2-devel ncurses ncurses-devel curl curl-devel e2fsprogs
+yum -y install glib2 glib2-devel bzip2 bzip2-devel libevent libevent-devel
+yum -y install ncurses ncurses-devel curl curl-devel e2fsprogs
 yum -y install e2fsprogs-devel krb5 krb5-devel libidn libidn-devel
-yum -y install openssl openssl-devel vim-minimal sendmail
-yum -y install fonts-chinese scim-chewing scim-pinyin scim-tables-chinese
+yum -y install openssl openssl-devel vim-minimal nano sendmail
+yum -y install fonts-chinese gettext gettext-devel
+yum -y install ncurses-devel
+yum -y install gmp-devel pspell-devel
+yum -y install unzip
+
+echo "============================check files=================================="
+if [ -s php-5.2.10.tar.gz ]; then
+  echo "php-5.2.10.tar.gz [found]"
+  else
+  echo "Error: php-5.2.10.tar.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/php/php-5.2.10.tar.gz
+fi
+
+if [ -s php-5.2.10-fpm-0.5.13.diff.gz ]; then
+  echo "php-5.2.10-fpm-0.5.13.diff.gz [found]"
+  else
+  echo "Error: php-5.2.10-fpm-0.5.13.diff.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/phpfpm/php-5.2.10-fpm-0.5.13.diff.gz
+fi
+
+if [ -s PDO_MYSQL-1.0.2.tgz ]; then
+  echo "PDO_MYSQL-1.0.2.tgz [found]"
+  else
+  echo "Error: PDO_MYSQL-1.0.2.tgz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/pdo/PDO_MYSQL-1.0.2.tgz
+fi
+
+if [ -s memcache-2.2.5.tgz ]; then
+  echo "memcache-2.2.5.tgz [found]"
+  else
+  echo "Error: memcache-2.2.5.tgz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/memcache/memcache-2.2.5.tgz
+fi
+
+if [ -s pcre-7.9.tar.gz ]; then
+  echo "pcre-7.9.tar.gz [found]"
+  else
+  echo "Error: pcre-7.9.tar.gz not found!!!download now......"
+wget -c http://soft.vpser.net/web/pcre/pcre-7.9.tar.gz
+fi
+
+if [ -s nginx-0.7.65.tar.gz ]; then
+  echo "nginx-0.7.65.tar.gz [found]"
+  else
+  echo "Error: nginx-0.7.65.tar.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/nginx/nginx-0.7.65.tar.gz
+fi
+
+if [ -s mysql-5.1.44.tar.gz ]; then
+  echo "mysql-5.1.44.tar.gz [found]"
+  else
+  echo "Error: mysql-5.1.44.tar.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/datebase/mysql/mysql-5.1.44.tar.gz
+fi
+
+if [ -s libiconv-1.13.tar.gz ]; then
+  echo "libiconv-1.13.tar.gz [found]"
+  else
+  echo "Error: libiconv-1.13.tar.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/libiconv/libiconv-1.13.tar.gz
+fi
+
+if [ -s libmcrypt-2.5.8.tar.gz ]; then
+  echo "libmcrypt-2.5.8.tar.gz [found]"
+  else
+  echo "Error: libmcrypt-2.5.8.tar.gz not found!!!download now......"
+  wget -c  http://soft.vpser.net/web/libmcrypt/libmcrypt-2.5.8.tar.gz
+fi
+
+if [ -s mhash-0.9.9.9.tar.gz ]; then
+  echo "mhash-0.9.9.9.tar.gz [found]"
+  else
+  echo "Error: mhash-0.9.9.9.tar.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/mhash/mhash-0.9.9.9.tar.gz
+fi
+
+if [ -s mcrypt-2.6.8.tar.gz ]; then
+  echo "mcrypt-2.6.8.tar.gz [found]"
+  else
+  echo "Error: mcrypt-2.6.8.tar.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/mcrypt/mcrypt-2.6.8.tar.gz
+fi
+
+if [ -s phpmyadmin.tar.gz ]; then
+  echo "phpmyadmin.tar.gz [found]"
+  else
+  echo "Error: phpmyadmin.tar.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/datebase/phpmyadmin/phpmyadmin.tar.gz
+fi
+
+if [ -s p.tar.gz ]; then
+  echo "p.tar.gz [found]"
+  else
+  echo "Error: p.tar.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/prober/p.tar.gz
+fi
+
+if [ -s suhosin-patch-5.2.10-0.9.7.patch.gz ]; then
+  echo "suhosin-patch-5.2.10-0.9.7.patch.gz [found]"
+  else
+  echo "Error: suhosin-patch-5.2.10-0.9.7.patch.gz not found!!!download now......"
+  wget -c http://soft.vpser.net/web/suhosin/suhosin-patch-5.2.10-0.9.7.patch.gz
+fi
+echo "============================check files=================================="
 
 cd $cur_dir
-wget -c http://soft.vpser.net/web/libiconv/libiconv-1.13.tar.gz
 tar zxvf libiconv-1.13.tar.gz
 cd libiconv-1.13/
 ./configure --prefix=/usr/local
@@ -73,7 +195,6 @@ make && make install
 cd ../
 
 cd $cur_dir
-wget -c  http://soft.vpser.net/web/libmcrypt/libmcrypt-2.5.8.tar.gz
 tar zxvf libmcrypt-2.5.8.tar.gz
 cd libmcrypt-2.5.8/
 ./configure
@@ -85,7 +206,6 @@ make && make install
 cd ../../
 
 cd $cur_dir
-wget -c http://soft.vpser.net/web/mhash/mhash-0.9.9.9.tar.gz
 tar zxvf mhash-0.9.9.9.tar.gz
 cd mhash-0.9.9.9/
 ./configure
@@ -103,7 +223,6 @@ ln -s /usr/local/lib/libmhash.so.2 /usr/lib/libmhash.so.2
 ln -s /usr/local/lib/libmhash.so.2.0.1 /usr/lib/libmhash.so.2.0.1
 
 cd $cur_dir
-wget -c http://soft.vpser.net/web/mcrypt/mcrypt-2.6.8.tar.gz
 tar zxvf mcrypt-2.6.8.tar.gz
 cd mcrypt-2.6.8/
 ./configure
@@ -112,10 +231,9 @@ cd ../
 
 echo "============================mysql install=================================="
 cd $cur_dir
-wget -c http://soft.vpser.net/datebase/mysql/mysql-5.1.35.tar.gz
-tar -zxvf mysql-5.1.35.tar.gz
-cd mysql-5.1.35
-./configure --prefix=/usr/local/mysql --enable-assembler --with-charset=utf8 --enable-thread-safe-client --with-extra-charsets=all --with-big-tables --with-readline --with-ssl --with-embedded-server --enable-local-infile
+tar -zxvf mysql-5.1.44.tar.gz
+cd mysql-5.1.44/
+./configure --prefix=/usr/local/mysql --with-extra-charsets=all --enable-thread-safe-client --enable-assembler --with-charset=utf8 --enable-thread-safe-client --with-extra-charsets=all --with-big-tables --with-readline --with-ssl --with-embedded-server --enable-local-infile
 make && make install
 cd ../
 
@@ -130,11 +248,14 @@ chmod 755 /etc/init.d/mysql
 chkconfig --level 345 mysql on
 echo "/usr/local/mysql/lib/mysql" >> /etc/ld.so.conf
 echo "/usr/local/lib" >>/etc/ld.so.conf
+
 ldconfig
 ln -s /usr/local/mysql/lib/mysql /usr/lib/mysql
 ln -s /usr/local/mysql/include/mysql /usr/include/mysql
 /etc/init.d/mysql start
-/usr/local/mysql/bin/mysqladmin -u root password root
+
+/usr/local/mysql/bin/mysqladmin -u root password $mysqlrootpwd
+
 /etc/init.d/mysql restart
 /etc/init.d/mysql stop
 chkconfig mysql-ndb off
@@ -143,19 +264,19 @@ echo "============================mysql intall finished=========================
 
 echo "============================php+eaccelerator install======================"
 cd $cur_dir
-wget -c http://soft.vpser.net/web/php/php-5.2.10.tar.gz
-wget -c http://soft.vpser.net/web/phpfpm/php-5.2.10-fpm-0.5.11.diff.gz
 tar zxvf php-5.2.10.tar.gz
-gzip -cd php-5.2.10-fpm-0.5.11.diff.gz | patch -d php-5.2.10 -p1
+gzip -d ./suhosin-patch-5.2.10-0.9.7.patch.gz 
+gzip -cd php-5.2.10-fpm-0.5.13.diff.gz | patch -d php-5.2.10 -p1
 cd php-5.2.10/
-./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-discard-path --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-fastcgi --enable-fpm --enable-force-cgi-redirect --enable-mbstring --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-ftp --without-pear --with-mime-magic=/usr/share/file/magic.mime
+patch -p 1 -i ../suhosin-patch-5.2.10-0.9.7.patch
+./buildconf --force
+./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-fastcgi --enable-fpm --enable-force-cgi-redirect --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic --enable-suhosin
 make ZEND_EXTRA_LIBS='-liconv'
 make install
 cp php.ini-dist /usr/local/php/etc/php.ini
 cd ../
 
 cd $cur_dir
-wget -c http://soft.vpser.net/web/memcache/memcache-2.2.5.tgz
 tar zxvf memcache-2.2.5.tgz
 cd memcache-2.2.5/
 /usr/local/php/bin/phpize
@@ -163,11 +284,20 @@ cd memcache-2.2.5/
 make && make install
 cd ../
 
-sed -i 's#extension_dir = "./"#extension_dir = "/usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/"\nextension = "memcache.so"\n#' /usr/local/php/etc/php.ini
+tar zxvf PDO_MYSQL-1.0.2.tgz
+cd PDO_MYSQL-1.0.2/
+/usr/local/php/bin/phpize
+./configure --with-php-config=/usr/local/php/bin/php-config --with-pdo-mysql=/usr/local/mysql
+make
+make install
+cd ../
+
+sed -i 's#extension_dir = "./"#extension_dir = "/usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/"\nextension = "memcache.so"\nextension = "pdo_mysql.so"\n#' /usr/local/php/etc/php.ini
 sed -i 's#output_buffering = Off#output_buffering = On#' /usr/local/php/etc/php.ini
 sed -i 's/post_max_size = 8M/post_max_size = 50M/g' /usr/local/php/etc/php.ini
 sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 50M/g' /usr/local/php/etc/php.ini
 sed -i 's/;date.timezone =/date.timezone = PRC/g' /usr/local/php/etc/php.ini
+sed -i 's/; cgi.fix_pathinfo=0/cgi.fix_pathinfo=0/g' /usr/local/php/etc/php.ini
 
 
 if [ `uname -m` = 'x86_64' ]; then
@@ -206,16 +336,14 @@ echo "============================php+eaccelerator install finished=============
 
 echo "============================nginx install================================="
 cd $cur_dir
-wget -c http://soft.vpser.net/web/pcre/pcre-7.9.tar.gz
 tar zxvf pcre-7.9.tar.gz
 cd pcre-7.9/
 ./configure
 make && make install
 cd ../
 
-wget -c http://soft.vpser.net/web/nginx/nginx-0.7.63.tar.gz
-tar zxvf nginx-0.7.63.tar.gz
-cd nginx-0.7.63/
+tar zxvf nginx-0.7.65.tar.gz
+cd nginx-0.7.65/
 ./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module
 make && make install
 cd ../
@@ -228,6 +356,7 @@ cp conf/discuz.conf /usr/local/nginx/conf/discuz.conf
 cp conf/sablog.conf /usr/local/nginx/conf/sablog.conf
 cp conf/typecho.conf /usr/local/nginx/conf/typecho.conf
 cp conf/wordpress.conf /usr/local/nginx/conf/wordpress.conf
+cp conf/none.conf /usr/local/nginx/conf/none.conf
 sed -i 's/www.lnmp.org/'$domain'/g' /usr/local/nginx/conf/nginx.conf
 
 rm -f /usr/local/nginx/conf/fcgi.conf
@@ -237,6 +366,10 @@ echo "/usr/local/nginx/sbin/nginx" >>/root/run.sh
 chmod 777 /root/run.sh
 /etc/init.d/mysql start
 /root/run.sh
+
+cd $cur_dir
+cp lnmp /root/lnmp
+chmod +x /root/lnmp
 echo "============================nginx install finished================================="
 
 cat >/home/wwwroot/phpinfo.php<<eof
@@ -244,11 +377,11 @@ cat >/home/wwwroot/phpinfo.php<<eof
 phpinfo();
 ?>
 eof
-wget -c http://soft.vpser.net/prober/prober2.tar.gz
-tar zxvf prober2.tar.gz
-mv prober2.php /home/wwwroot/p.php
+
+cd $cur_dir
+tar zxvf p.tar.gz
+cp p.php /home/wwwroot/p.php
 echo "============================phpMyAdmin install================================="
-wget -c http://soft.vpser.net/datebase/phpmyadmin/phpmyadmin.tar.gz
 #phpmyadmin
 tar zxvf phpmyadmin.tar.gz
 mv phpmyadmin /home/wwwroot/
@@ -263,23 +396,48 @@ echo "===========================add nginx and php-fpm on startup finished======
 #set timezone
 cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
+echo "===================================== Check install ==================================="
 clear
+if [ -s /usr/local/nginx ]; then
+  echo "/usr/local/nginx [found]"
+  else
+  echo "Error: /usr/local/nginx not found!!!"
+fi
+
+if [ -s /usr/local/php ]; then
+  echo "/usr/local/php [found]"
+  else
+  echo "Error: /usr/local/php not found!!!"
+fi
+
+if [ -s /usr/local/mysql ]; then
+  echo "/usr/local/mysql [found]"
+  else
+  echo "Error: /usr/local/mysql not found!!!"
+fi
+
+echo "========================== Check install ================================"
+
+echo "Install lnmp 0.4 finished! enjoy it."
 echo "========================================================================="
-echo "LNMP V0.3 for CentOS/RadHat Linux VPS  Written by Licess "
+echo "LNMP V0.4 for CentOS/RadHat Linux VPS  Written by Licess "
 echo "========================================================================="
 echo ""
-echo "For more information please visit http://blog.licess.cn/lnmp/"
+echo "For more information please visit http://www.lnmp.org/"
 echo ""
-echo "run nginx+php-cgi: /root/run.sh"
-echo "default mysql root password:root"
-echo "phpinfo test: http://domain.name/phpinfo.php"
-echo "phpMyAdmin test: http://domain.name/phpmyadmin"
-echo "Prober : http://domain.name/prober.php"
+echo "lnmp status manage: /root/lnmp {start|stop|reload|restart|kill|status}"
+echo "default mysql root password:$mysqlrootpwd"
+echo "phpinfo : http://$domain/phpinfo.php"
+echo "phpMyAdmin : http://$domain/phpmyadmin/"
+echo "Prober : http://$domain/p.php"
+echo ""
 echo "The path of some dirs:"
 echo "mysql dir:   /usr/local/mysql"
 echo "php dir:     /usr/local/php"
 echo "nginx dir:   /usr/local/nginx"
-echo "web dir      /home/wwwroot"
+echo "web dir :     /home/wwwroot"
 echo ""
 echo "========================================================================="
 fi
+/root/lnmp status
+netstat -ntl
