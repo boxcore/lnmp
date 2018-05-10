@@ -8,7 +8,7 @@ fi
 
 clear
 echo "========================================================================="
-echo "Vsftpd for LNMP V0.6  ,  Written by Licess "
+echo "Vsftpd for LNMP V0.7  ,  Written by Licess "
 echo "========================================================================="
 echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo "This script is a tool to install VSftp for LNMP "
@@ -51,6 +51,7 @@ mkdir /var/ftp
 touch /etc/vsftpd/userlist.chroot
 touch /etc/vsftpd/userlist_deny.chroot
 touch /var/log/vsftpd.log
+mkdir -p /usr/share/empty
 
 /usr/local/sbin/vsftpd &
 setsebool -P ftpd_disable_trans on
@@ -63,7 +64,7 @@ pkill vsftpd
 
 clear
 echo "========================================================================="
-echo "Vsftpd for LNMP V0.6  ,  Written by Licess "
+echo "Vsftpd for LNMP V0.7  ,  Written by Licess "
 echo "========================================================================="
 echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo "This script is a tool to install VSftp for LNMP "

@@ -9,7 +9,7 @@ if [ $(id -u) != "0" ]; then
 fi
 
 printf "=========================================================================\n"
-printf "Pure-FTPd status Manager for LNMP V0.6  ,  Written by Licess \n"
+printf "Pure-FTPd status Manager for LNMP V0.7  ,  Written by Licess \n"
 printf "=========================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to Manage status of Pure-FTPd \n"
@@ -19,14 +19,24 @@ printf "Usage: /root/pureftpd {start|stop|restart|status|who}\n"
 printf "=========================================================================\n"
 
 prog="Pure-FTPd"
+PUREPIDFILE="/var/run/pure-ftpd.pid"
+PURECONFIGPL="/usr/local/pureftpd/sbin/pure-config.pl"
+PURECONFIGFILE="/usr/local/pureftpd/pure-ftpd.conf"
 
 start() {
 	printf "Starting $prog... \n"
-	/usr/local/pureftpd/sbin/pure-config.pl /usr/local/pureftpd/pure-ftpd.conf --daemonize
+	$PURECONFIGPL $PURECONFIGFILE --daemonize
 }
 stop() {
 	printf "Stopping $prog... \n"
-	killall pure-ftpd
+	kill `cat $PUREPIDFILE`
+}
+status() {
+if [ -e $PUREPIDFILE ]; then
+	printf "$prog is running.\n"
+else	
+	printf "$prog is NOT running.\n"
+fi
 }
 
 case "$1" in
@@ -41,13 +51,9 @@ case "$1" in
 		start
 		;;
 	status)
-		if [ -e /var/run/pure-ftpd.pid ]; then
-			printf "$prog is running.\n"
-		else	
-			printf "$prog is NOT running.\n"
-		fi
+		status
 		;;
 	*)
-		printf "Usage: /root/pureftpd {start|stop|restart|status|who}\n"
+		printf "Usage: /root/pureftpd {start|stop|restart|status}\n"
 esac
 exit

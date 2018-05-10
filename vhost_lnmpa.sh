@@ -8,22 +8,21 @@ fi
 
 clear
 echo "========================================================================="
-echo "Add Virtual Host for LNMP V0.7  ,  Written by Licess "
+echo "Add Virtual Host for LNMPA V0.7  ,  Written by Licess "
 echo "========================================================================="
-echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
-echo "This script is a tool to add virtual host for nginx "
+echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP+Apache on Linux "
+echo "This script is a tool to add virtual host for Nginx And Apache "
 echo "For more information please visit http://www.lnmp.org/"
 echo ""
 echo "========================================================================="
 
 if [ "$1" != "--help" ]; then
 
-
 	domain="www.lnmp.org"
-	echo "Please input domain:"
-	read -p "(Default domain: www.lnmp.org):" domain
+	read -p "Please input domain:" domain
 	if [ "$domain" = "" ]; then
-		domain="www.lnmp.org"
+		echo "Error: Domain Name Can't be empty!!"
+		exit 1
 	fi
 	if [ ! -f "/usr/local/nginx/conf/vhost/$domain.conf" ]; then
 	echo "==========================="
@@ -58,25 +57,18 @@ if [ "$1" != "--help" ]; then
 	echo Virtual Host Directory="$vhostdir"
 	echo "==========================="
 
-	echo "==========================="
-	echo "Allow Rewrite rule? (y/n)"
-	echo "==========================="
-	read allow_rewrite
+#set Server Administrator Email Address
 
-	if [ "$allow_rewrite" == 'n' ]; then
-		rewrite="none"
+	ServerAdmin=""
+	read -p "Please input Administrator Email Address:" ServerAdmin
+	if [ "$ServerAdmin" == "" ]; then
+		echo "Administrator Email Address will set to webmaster@example.com!"
+		ServerAdmin="webmaster@example.com"
 	else
-		rewrite="other"
-		echo "Please input the rewrite of programme :"
-		echo "wordpress,discuz,typecho,sablog,dabr rewrite was exist."
-		read -p "(Default rewrite: other):" rewrite
-		if [ "$rewrite" = "" ]; then
-			rewrite="other"
-		fi
+	echo "==========================="
+	echo Server Administrator Email="$ServerAdmin"
+	echo "==========================="
 	fi
-	echo "==========================="
-	echo You choose rewrite="$rewrite"
-	echo "==========================="
 
 	echo "==========================="
 	echo "Allow access_log? (y/n)"
@@ -126,14 +118,6 @@ echo "set permissions of Virtual Host directory......"
 chmod -R 755 $vhostdir
 chown -R www:www $vhostdir
 
-if [ ! -f /usr/local/nginx/conf/$rewrite.conf ]; then
-  echo "Create Virtul Host ReWrite file......"
-	touch /usr/local/nginx/conf/$rewrite.conf
-	echo "Create rewirte file successful,now you can add rewrite rule into /usr/local/nginx/conf/$rewrite.conf."
-else
-	echo "You select the exist rewrite rule:/usr/local/nginx/conf/$rewrite.conf"
-fi
-
 cat >/usr/local/nginx/conf/vhost/$domain.conf<<eof
 server
 	{
@@ -142,12 +126,20 @@ server
 		index index.html index.htm index.php default.html default.htm default.php;
 		root  $vhostdir;
 
-		include $rewrite.conf;
+		location / {
+			try_files \$uri @apache;
+			}
+
+		location @apache {
+			internal;
+			proxy_pass http://127.0.0.1:88;
+			include proxy.conf;
+			}
+
 		location ~ .*\.(php|php5)?$
 			{
-				fastcgi_pass  unix:/tmp/php-cgi.sock;
-				fastcgi_index index.php;
-				include fcgi.conf;
+				proxy_pass http://127.0.0.1:88;
+				include proxy.conf;
 			}
 
 		location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$
@@ -164,18 +156,41 @@ server
 	}
 eof
 
+cat >/usr/local/apache/conf/vhost/$domain.conf<<eof
+<VirtualHost *:88>
+ServerAdmin webmaster@example.com
+php_admin_value open_basedir "$vhostdir:/tmp/:/var/tmp/:/proc/"
+DocumentRoot "$vhostdir"
+ServerName $domain
+ErrorLog "logs/$al_name-error_log"
+CustomLog "logs/$al_name-access_log" common
+</VirtualHost>
+eof
+
+if [ "$access_log" == 'n' ]; then
+sed -i 's/ErrorLog/#ErrorLog/g' /usr/local/apache/conf/vhost/$domain.conf
+sed -i 's/CustomLog/#CustomLog/g' /usr/local/apache/conf/vhost/$domain.conf
+fi
+
+if [ "$add_more_domainame" == 'y' ]; then
+sed -i "/ServerName/a\
+ServerAlias $moredomainame" /usr/local/apache/conf/vhost/$domain.conf
+fi
+
 echo "Test Nginx configure file......"
 /usr/local/nginx/sbin/nginx -t
 echo ""
 echo "Restart Nginx......"
 /usr/local/nginx/sbin/nginx -s reload
+echo "Restart Apache......"
+/etc/init.d/httpd restart
 
 echo "========================================================================="
 echo "Add Virtual Host for LNMP V0.7  ,  Written by Licess "
 echo "========================================================================="
 echo "For more information please visit http://www.lnmp.org/"
 echo ""
-echo "Your domain:$domain"
+echo "Your domain:$domain $moredomainame"
 echo "Directory of $domain:$vhostdir"
 echo ""
 echo "========================================================================="

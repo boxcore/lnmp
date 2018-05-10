@@ -10,7 +10,7 @@ fi
 
 clear
 printf "=======================================================================\n"
-printf "Install eAcesselerator for LNMP V0.6  ,  Written by Licess \n"
+printf "Install eAcesselerator for LNMP V0.7  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install eAccelerator for lnmp \n"
@@ -35,9 +35,19 @@ cur_dir=$(pwd)
 
 printf "=========================== install eaccelerator ======================\n"
 
-wget -c http://soft.vpser.net/web/eaccelerator/eaccelerator-0.9.5.3.tar.bz2
-tar jxvf eaccelerator-0.9.5.3.tar.bz2
-cd eaccelerator-0.9.5.3/
+if [ -s /usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/eaccelerator.so ]; then
+rm -rf /usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/eaccelerator.so
+fi
+if [ -s /usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/eaccelerator.so ]; then
+rm -rf /usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/eaccelerator.so
+fi
+if [ -s eaccelerator-0.9.6.1 ]; then
+rm -rf eaccelerator-0.9.6.1/
+fi
+
+wget -c http://soft.vpser.net/web/eaccelerator/eaccelerator-0.9.6.1.tar.bz2
+tar jxvf eaccelerator-0.9.6.1.tar.bz2
+cd eaccelerator-0.9.6.1/
 /usr/local/php/bin/phpize
 ./configure --enable-eaccelerator=shared --with-php-config=/usr/local/php/bin/php-config --with-eaccelerator-shared-memory
 make
@@ -45,7 +55,12 @@ make install
 cd ../
 
 mkdir -p /usr/local/eaccelerator_cache
-cat >>ea.ini<<EOF
+sed -ni '1,/;eaccelerator/p;/;ionCube/,$ p' /usr/local/php/etc/php.ini
+
+php_version=`php -r 'echo PHP_VERSION;'`
+
+if [ $php_version = "5.2.14" ] || [ $php_version = "5.2.15" ] || [ $php_version = "5.2.16" ] || [ $php_version = "5.2.17" ]; then
+cat >ea.ini<<EOF
 [eaccelerator]
 zend_extension="/usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/eaccelerator.so"
 eaccelerator.shm_size="1"
@@ -64,21 +79,59 @@ eaccelerator.compress_level="9"
 eaccelerator.keys = "disk_only"
 eaccelerator.sessions = "disk_only"
 eaccelerator.content = "disk_only"
+
 EOF
 
 sed -i '/;eaccelerator/ {
 r ea.ini
 }' /usr/local/php/etc/php.ini
 
-echo "Reload php-fpm"
-/usr/local/php/sbin/php-fpm reload
+echo "Restarting php-fpm......"
+/etc/init.d/php-fpm restart
 
-printf "===================== install eaccelerator completed ===================\n"
+else
+cat >ea.ini<<EOF
+[eaccelerator]
+zend_extension="/usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/eaccelerator.so"
+eaccelerator.shm_size="1"
+eaccelerator.cache_dir="/usr/local/eaccelerator_cache"
+eaccelerator.enable="1"
+eaccelerator.optimizer="1"
+eaccelerator.check_mtime="1"
+eaccelerator.debug="0"
+eaccelerator.filter=""
+eaccelerator.shm_max="0"
+eaccelerator.shm_ttl="3600"
+eaccelerator.shm_prune_period="3600"
+eaccelerator.shm_only="0"
+eaccelerator.compress="1"
+eaccelerator.compress_level="9"
+eaccelerator.keys = "disk_only"
+eaccelerator.sessions = "disk_only"
+eaccelerator.content = "disk_only"
 
+EOF
+
+sed -i '/;eaccelerator/ {
+r ea.ini
+}' /usr/local/php/etc/php.ini
+
+if [ -s /etc/init.d/httpd ] && [ -s /usr/local/apache ]; then
+echo "Restarting Apache......"
+/etc/init.d/httpd restart
+else
+echo "Restarting php-fpm......"
+/etc/init.d/php-fpm restart
+fi
+
+fi
+
+rm ea.ini
 clear
-printf "Install eAccelerator completed,enjoy it!"
+printf "===================== install eaccelerator completed ===================\n"
+printf "Install eAccelerator completed,enjoy it!\n"
 printf "=======================================================================\n"
-printf "Install eAcesselerator for LNMP V0.6  ,  Written by Licess \n"
+printf "Install eAcesselerator for LNMP V0.7  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install eAccelerator for lnmp \n"

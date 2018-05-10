@@ -10,7 +10,7 @@ fi
 
 clear
 printf "=======================================================================\n"
-printf "Install ionCube for LNMP V0.6  ,  Written by Licess \n"
+printf "Install ionCube for LNMP V0.7  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install eAccelerator for lnmp \n"
@@ -34,6 +34,7 @@ cur_dir=$(pwd)
 	char=`get_char`
 
 printf "=========================== install eaccelerator ======================\n"
+php_version=`php -r 'echo PHP_VERSION;'`
 
 if [ `getconf WORD_BIT` = '32' ] && [ `getconf LONG_BIT` = '64' ] ; then
         cd /usr/local/
@@ -45,8 +46,11 @@ else
 	tar zxvf ioncube_loaders_lin_x86.tar.gz
 fi
 
+sed -i '/ionCube Loader/d' /usr/local/php/etc/php.ini
+sed -i '/ioncube_loader_lin/d' /usr/local/php/etc/php.ini
 
-cat >>ionCube.ini<<EOF
+if [ $php_version = "5.2.14" ] || [ $php_version = "5.2.15" ] || [ $php_version = "5.2.16" ] || [ $php_version = "5.2.17" ]; then
+cat >ionCube.ini<<EOF
 [ionCube Loader]
 zend_extension="/usr/local/ioncube/ioncube_loader_lin_5.2.so"
 EOF
@@ -56,14 +60,34 @@ r ionCube.ini
 }' /usr/local/php/etc/php.ini
 
 echo "Reload php-fpm......"
-/usr/local/php/sbin/php-fpm reload
+/etc/init.d/php-fpm restart
+else
+cat >ionCube.ini<<EOF
+[ionCube Loader]
+zend_extension="/usr/local/ioncube/ioncube_loader_lin_5.3.so"
+EOF
 
+sed -i '/;ionCube/ {
+r ionCube.ini
+}' /usr/local/php/etc/php.ini
+
+if [ -s /etc/init.d/httpd ] && [ -s /usr/local/apache ]; then
+echo "Restarting Apache......"
+/etc/init.d/httpd restart
+else
+echo "Restarting php-fpm......"
+/etc/init.d/php-fpm restart
+fi
+
+fi
+
+rm ionCube.ini
 printf "===================== install ionCube completed ===================\n"
 
 clear
-printf "Install ionCube completed,enjoy it!"
+printf "Install ionCube completed,enjoy it!\n"
 printf "=======================================================================\n"
-printf "Install ionCube for LNMP V0.6  ,  Written by Licess \n"
+printf "Install ionCube for LNMP V0.7  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install eAccelerator for lnmp \n"

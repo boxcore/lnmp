@@ -14,11 +14,11 @@ LNMP官网：http://lnmp.org
 
 
 安装
-_____
+____
 
-wget -c http://soft.vpser.net/lnmp/lnmp0.6.tar.gz
-tar zxvf lnmp0.6.tar.gz
-cd lnmp0.6/
+wget -c http://soft.vpser.net/lnmp/lnmp0.7.tar.gz
+tar zxvf lnmp0.7.tar.gz
+cd lnmp0.7/
 
 CentOS/RadHat执行：
 ./centos.sh
@@ -29,12 +29,22 @@ Debian执行：
 Ubuntu执行：
 ./ubuntu.sh
 
+LNMP升级到LNMPA，执行：
+./apache.sh
+
 LNMP状态管理： /root/lnmp {start|stop|reload|restart|kill|status}
-PureFTPd状态管理 /root/pureftpd {start|stop|restart|kill|status}
+LNMPA状态管理： /root/lnmpa {start|stop|reload|restart|kill|status}
+Nginx状态管理：/etc/init.d/nginx {start|stop|reload|restart}
+PHP-FPM状态管理：/etc/init.d/php-fpm {start|stop|quit|restart|reload|logrotate}
+PureFTPd状态管理： /root/pureftpd {start|stop|restart|kill|status}
+MySQL状态管理：/etc/init.d/mysql {start|stop|restart|reload|force-reload|status}
+Apache状态管理：/root/httpd {start|stop|restart|graceful|graceful-stop|configtest|status}
+
 添加虚拟主机 /root/vhost.sh
 phpinfo : http://$domain/phpinfo.php
 phpMyAdmin : http://$domain/phpmyadmin/
-探针 : http://$domain/p.php"
+探针 : http://$domain/p.php
+PureFtp用户管理：http://$domain/ftp/
 
 LNMP相关目录：
 mysql :   /usr/local/mysql
@@ -43,8 +53,15 @@ nginx :   /usr/local/nginx
 网站目录 :     /home/wwwroot
 Nginx日志目录：/home/wwwlogs
 
+配置文件：
+Nginx主配置文件：/usr/local/nginx/conf/nginx.conf
+MySQL配置文件：/etc/my.cnf
+PHP配置文件：/usr/local/php/etc/php.ini
+PureFtpd配置文件：/usr/local/pureftpd/pure-ftpd.conf
+PureFtpd MySQL配置文件：/usr/local/pureftpd/pureftpd-mysql.conf
+Apache配置文件：/usr/local/apache/conf/httpd.conf
+
 技术支持
 ————————
 
-作者技术支持邮箱：www@lnmp.org
-技术支持论坛：http://bbs.vpser.net/forum-25-1.html （注册需注明原因，人工审核。）
+技术支持论坛：http://bbs.vpser.net/forum-25-1.html 
