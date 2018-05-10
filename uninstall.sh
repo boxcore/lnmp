@@ -8,7 +8,7 @@ fi
 
 clear
 echo "========================================================================="
-echo "LNMP V0.5 for CentOS/RadHat Linux VPS  Written by Licess"
+echo "LNMP V0.6 for CentOS/RadHat Linux VPS  Written by Licess"
 echo "========================================================================="
 echo "A tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo ""
@@ -58,7 +58,7 @@ rm /root/run.sh
 echo "Lnmp Uninstall completed."
 
 echo "========================================================================="
-echo "LNMP V0.4 for CentOS/RadHat Linux VPS  Written by Licess "
+echo "LNMP V0.6 for CentOS/RadHat Linux VPS  Written by Licess "
 echo "========================================================================="
 echo "A tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo ""

@@ -10,7 +10,7 @@ fi
 
 clear
 echo "========================================================================="
-echo "LNMP V0.5 for CentOS/RadHat Linux VPS  Written by Licess"
+echo "LNMP V0.6 for CentOS/RadHat Linux VPS  Written by Licess"
 echo "========================================================================="
 echo "A tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo ""
@@ -89,20 +89,12 @@ ntpdate -d cn.pool.ntp.org
 date
 
 #Disable SeLinux
+if [ -s /etc/selinux/config ]; then
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+fi
 
-yum -y install patch make gcc gcc-c++ gcc-g77 flex bison file
-yum -y install libtool libtool-libs autoconf kernel-devel
-yum -y install libjpeg libjpeg-devel libpng libpng-devel libpng10 libpng10-devel gd gd-devel
-yum -y install freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel
-yum -y install glib2 glib2-devel bzip2 bzip2-devel libevent libevent-devel
-yum -y install ncurses ncurses-devel curl curl-devel e2fsprogs
-yum -y install e2fsprogs-devel krb5 krb5-devel libidn libidn-devel
-yum -y install openssl openssl-devel vim-minimal nano sendmail
-yum -y install fonts-chinese gettext gettext-devel
-yum -y install ncurses-devel
-yum -y install gmp-devel pspell-devel
-yum -y install unzip
+for packages in patch make gcc gcc-c++ gcc-g77 flex bison file libtool libtool-libs autoconf kernel-devel libjpeg libjpeg-devel libpng libpng-devel libpng10 libpng10-devel gd gd-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glib2 glib2-devel bzip2 bzip2-devel libevent libevent-devel ncurses ncurses-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5 krb5-devel libidn libidn-devel openssl openssl-devel vim-minimal nano fonts-chinese gettext gettext-devel ncurses-devel gmp-devel pspell-devel unzip;
+do yum -y install $packages; done
 
 echo "============================check files=================================="
 if [ -s php-5.2.14.tar.gz ]; then
@@ -441,9 +433,9 @@ fi
 
 echo "========================== Check install ================================"
 
-echo "Install lnmp 0.5 completed! enjoy it."
+echo "Install lnmp 0.6 completed! enjoy it."
 echo "========================================================================="
-echo "LNMP V0.5 for CentOS/RadHat Linux VPS  Written by Licess "
+echo "LNMP V0.6 for CentOS/RadHat Linux VPS  Written by Licess "
 echo "========================================================================="
 echo ""
 echo "For more information please visit http://www.lnmp.org/"

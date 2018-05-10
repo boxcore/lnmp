@@ -16,9 +16,9 @@ LNMP官网：http://lnmp.org
 安装
 _____
 
-wget http://soft.vpser.net/lnmp/lnmp0.5.tar.gz
-tar zxvf lnmp0.5.tar.gz
-cd lnmp0.5/
+wget -c http://soft.vpser.net/lnmp/lnmp0.6.tar.gz
+tar zxvf lnmp0.6.tar.gz
+cd lnmp0.6/
 
 CentOS/RadHat执行：
 ./centos.sh
@@ -26,8 +26,12 @@ CentOS/RadHat执行：
 Debian执行：
 ./debian.sh
 
+Ubuntu执行：
+./ubuntu.sh
+
 LNMP状态管理： /root/lnmp {start|stop|reload|restart|kill|status}
 PureFTPd状态管理 /root/pureftpd {start|stop|restart|kill|status}
+添加虚拟主机 /root/vhost.sh
 phpinfo : http://$domain/phpinfo.php
 phpMyAdmin : http://$domain/phpmyadmin/
 探针 : http://$domain/p.php"
@@ -37,41 +41,10 @@ mysql :   /usr/local/mysql
 php :     /usr/local/php
 nginx :   /usr/local/nginx
 网站目录 :     /home/wwwroot
+Nginx日志目录：/home/wwwlogs
 
 技术支持
 ————————
 
 作者技术支持邮箱：www@lnmp.org
 技术支持论坛：http://bbs.vpser.net/forum-25-1.html （注册需注明原因，人工审核。）
-
-================================================================================
-LNMP一键安装包 更新记录：
-
-
-2010年
-5月21日更新nginx文件类型错误解析漏洞
-5月19日更新phpmyadmin
-5月19日更新pureftpd无法覆盖文件的问题。
-4月20日再次更新Debian上几个lib安装不成功的bug。
-4月8日更新了Debian上php没有安装成功的bug。
-
-2010年4月
-发布LNMP 0.4
-	>添加LNMP状态管理
-	>添加PureFTPd状态管理
-	>PHP增加suhosin
-	>增加VsFTPd、PureFTPd安装及管理
-	>增强Nginx虚拟主机添加功能，添加多域名、伪静态支持、日志是否启用的功能
-	>升级Nginx到0.7.65、MySQL到5.1.44
-
-2009年11月17日
-添加虚拟主机添加程序
-
-2008年11月15日
-发布LNMP 0.3
-
-2009年3月2日
-发布LNMP 0.2
-
-2009年1月19日
-发布LNMP 0.1

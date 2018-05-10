@@ -9,7 +9,7 @@ if [ $(id -u) != "0" ]; then
 fi
 clear
 printf "=========================================================================\n"
-printf "Pureftpd for LNMP V0.4  ,  Written by Licess \n"
+printf "Pureftpd for LNMP V0.6  ,  Written by Licess \n"
 printf "=========================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install pureftpd for lnmp \n"
@@ -71,18 +71,28 @@ chmod 777 -R /home/wwwroot/ftp/
 chown www -R /home/wwwroot/ftp/
 
 printf "Now you must enter http://youdomain.com/ftp/install.php in you Web Browser to install User manager for PureFTPd\n"
-printf "Start Pure-FTPd...\n"
-./pureftpd start
 
 cd $cur_dir
 cp pureftpd /root/pureftpd
 chmod +x /root/pureftpd
+/root/pureftpd start
+
+if [ -s /etc/debian_version ]; then
+cat >/etc/init.d/pureftpd.sh<<eof
+/root/pureftpd start
+eof
+update-rc.d pureftpd.sh defaults
+fi
+
+if [ -s /etc/redhat-release ]; then
+echo "/root/pureftpd start" >>/etc/rc.local
+fi
 
 clear
 printf "Install Pure-FTPd completed,enjoy it!\n"
 printf "Now you must enter http://youdomain.com/ftp/install.php in you Web Browser to install User manager for PureFTPd\n"
 printf "=======================================================================\n"
-printf "Install Pure-FTPd for LNMP V0.4  ,  Written by Licess \n"
+printf "Install Pure-FTPd for LNMP V0.6  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install Pure-FTPd for lnmp \n"

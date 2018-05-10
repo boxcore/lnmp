@@ -1,8 +1,48 @@
-ChangeLOg
+ChangeLog
 
-LNMP 0.4
+2010年10月9日发布LNMP 0.5
 
-添加LNMP状态管理工具
-增加Suhosin
-重新添加vsftpd 
-pcre-7.9升级到pcre-8.01
+升级Nginx到0.7.67、MySQL到5.1.48、PHP升级到5.2.14、PHPMyAdmin升级到3.3.7
+为安全将Nginx日志移动到/home/wwwlogs/下面；
+更改32位64位判别方式；
+增加系统时间调整，防止时间错误造成编译出错；
+优化eAccelerator安装程序；
+增加ionCube安装程序；
+虚拟主机添加可以直接运行：/root/vhost.sh；
+修正/root/lnmp状态判断错误。
+
+2010年11月27日
+
+更新lnmp文件上传大小限制为50MB
+
+2010年12月7日
+修正/root/pureftpd状态判断错误。
+
+2010年12月10日
+
+更新Nginx支持IPv6
+
+2011年1月17日
+
+将PHP执行时间有30秒调整为300秒。
+
+2011年1月17日
+安装脚本添加自动关闭SELINUX
+
+2010年3月28日
+
+发布LNMP 0.4
+添加LNMP状态管理
+添加PureFTPd状态管理
+PHP增加suhosin
+增加VsFTPd、PureFTPd安装及管理
+增强Nginx虚拟主机添加功能，添加多域名、伪静态支持、日志是否启用的功能
+升级Nginx到0.7.65、MySQL到5.1.44
+
+2008年11月15日
+发布LNMP 0.3
+添加虚拟主机添加程序
+
+2009年3月2日发布LNMP 0.2
+
+2009年1月19日发布LNMP0.1

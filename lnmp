@@ -9,7 +9,7 @@ if [ $(id -u) != "0" ]; then
 fi
 
 printf "=========================================================================\n"
-printf "Manager for LNMP V0.5  ,  Written by Licess \n"
+printf "Manager for LNMP V0.6  ,  Written by Licess \n"
 printf "=========================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to Manage status of lnmp \n"
@@ -73,7 +73,7 @@ function_restart()
 function_kill()
 {
     killall nginx
-    killall mysql
+    killall mysqld mysqld_safe
     killall php-cgi
 }
 

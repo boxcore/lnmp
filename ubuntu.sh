@@ -10,7 +10,7 @@ fi
 
 clear
 echo "========================================================================="
-echo "LNMP V0.6 for Debian VPS ,  Written by Licess "
+echo "LNMP V0.6 for Ubuntu VPS ,  Written by Licess "
 echo "========================================================================="
 echo "A tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo ""
@@ -31,18 +31,6 @@ if [ "$1" != "--help" ]; then
 	fi
 	echo "==========================="
 	echo "domain=$domain"
-	echo "==========================="
-
-#set area
-
-	area="america"
-	echo "Where are your servers located? asia,america,europe,oceania or africa "
-	read -p "(Default area: america):" area
-	if [ "$area" = "" ]; then
-		area="america"
-	fi
-	echo "==========================="
-	echo  "area=$area"
 	echo "==========================="
 
 #set mysql root password
@@ -92,20 +80,15 @@ sed -i 's/hwcap 1 nosegneg/hwcap 0 nosegneg/g' /etc/ld.so.conf.d/libc6-xen.conf
 fi
 
 apt-get update
-apt-get remove -y apache2 apache2-doc apache2-utils apache2.2-common mysql-client mysql-server php
+apt-get remove -y apache2 apache2-doc apache2-utils apache2.2-common
 
 apt-get install -y ntpdate
 ntpdate -d cn.pool.ntp.org
 date
- 
-apt-get install -y apt-spy
-cp /etc/apt/sources.list /etc/apt/sources.list.bak
-apt-spy update
-apt-spy -d stable -a $area -t 5
 
 apt-get update
 apt-get install -y build-essential gcc g++ make
-for packages in build-essential gcc g++ make re2c wget cron bzip2 libzip-dev libc6-dev file rcconf flex vim nano bison m4 gawk less make cpp binutils diffutils unzip tar bzip2 libbz2-dev unrar p7zip libncurses5-dev libncurses5 libncurses5-dev libncurses5-dev libtool libevent-dev libpcre3 libpcre3-dev libpcrecpp0 libssl-dev zlibc openssl libsasl2-dev libxml2 libxml2-dev libltdl3-dev libltdl-dev libmcrypt-dev libmysqlclient15-dev zlib1g zlib1g-dev libbz2-1.0 libbz2-dev libglib2.0-0 libglib2.0-dev libpng3 libfreetype6 libfreetype6-dev libjpeg62 libjpeg62-dev libjpeg-dev libpng-dev libpng12-0 libpng12-dev curl libcurl3 libmhash2 libmhash-dev libpq-dev libpq5 gettext libncurses5-dev libcurl4-gnutls-dev libjpeg-dev libpng12-dev libxml2-dev zlib1g-dev libfreetype6 libfreetype6-dev libssl-dev libcurl3 libcurl4-openssl-dev libcurl4-gnutls-dev mcrypt;
+for packages in build-essential gcc g++ make re2c wget cron bzip2 libzip-dev libc6-dev file rcconf flex vim nano bison m4 gawk less make cpp binutils diffutils unzip tar bzip2 libbz2-dev unrar p7zip libncurses5-dev libncurses5 libncurses5-dev libncurses5-dev libtool libevent-dev libpcre3 libpcre3-dev libpcrecpp0  libssl-dev zlibc openssl libsasl2-dev libxml2 libxml2-dev libltdl3-dev libltdl-dev libmcrypt-dev libmysqlclient15-dev zlib1g zlib1g-dev libbz2-1.0 libbz2-dev libglib2.0-0 libglib2.0-dev libpng3 libfreetype6 libfreetype6-dev libjpeg62 libjpeg62-dev libjpeg-dev libpng-dev libpng12-0 libpng12-dev curl libcurl3 libmhash2 libmhash-dev libpq-dev libpq5 gettext libncurses5-dev libcurl4-gnutls-dev libjpeg-dev libpng12-dev libxml2-dev zlib1g-dev libfreetype6 libfreetype6-dev libssl-dev libcurl3 libcurl4-openssl-dev libcurl4-gnutls-dev mcrypt;
 do apt-get install -y $packages --force-yes;apt-get -f -y install;apt-get -y autoremove; done
 
 echo "============================check files=================================="
@@ -222,6 +205,7 @@ cd automake-1.4/
 make && make install
 cd ../
 
+cd $cur_dir
 tar zxvf libiconv-1.13.tar.gz
 cd libiconv-1.13/
 ./configure
@@ -256,6 +240,9 @@ cd $cur_dir
 tar zxvf mysql-5.1.48.tar.gz
 cd mysql-5.1.48/
 ./configure --prefix=/usr/local/mysql --with-extra-charsets=all --enable-thread-safe-client --enable-assembler --with-charset=utf8 --enable-thread-safe-client --with-extra-charsets=all --with-big-tables --with-readline --with-ssl --with-embedded-server --enable-local-infile
+cat Makefile | sed '/set -ex;/,/done/d' > Makefile.1
+rm Makefile
+mv Makefile.1 Makefile
 make && make install
 cd ../
 
@@ -263,6 +250,7 @@ groupadd mysql
 useradd -g mysql mysql
 cp /usr/local/mysql/share/mysql/my-medium.cnf /etc/my.cnf
 sed -i 's/skip-locking/skip-external-locking/g' /etc/my.cnf
+
 /usr/local/mysql/bin/mysql_install_db --user=mysql --basedir=/usr/local/mysql
 ln -s /usr/local/mysql/share/mysql /usr/share/
 
@@ -287,10 +275,10 @@ cd $cur_dir
 tar zxvf php-5.2.14.tar.gz
 gzip -d ./suhosin-patch-5.2.14-0.9.7.patch.gz 
 gzip -cd php-5.2.14-fpm-0.5.14.diff.gz | patch -d php-5.2.14 -p1
-cd php-5.2.14/
 patch -p 1 -i ../suhosin-patch-5.2.14-0.9.7.patch
+cd php-5.2.14/
 ./buildconf --force
-./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-fastcgi --enable-fpm --enable-force-cgi-redirect --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic --enable-suhosin
+./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-fastcgi --enable-fpm --enable-force-cgi-redirect --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic
 make ZEND_EXTRA_LIBS='-liconv'
 make install
 mkdir -p /usr/local/php/etc/
@@ -322,7 +310,7 @@ sed -i 's/post_max_size = 8M/post_max_size = 50M/g' /usr/local/php/etc/php.ini
 sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 50M/g' /usr/local/php/etc/php.ini
 sed -i 's/;date.timezone =/date.timezone = PRC/g' /usr/local/php/etc/php.ini
 sed -i 's/; cgi.fix_pathinfo=0/cgi.fix_pathinfo=0/g' /usr/local/php/etc/php.ini
-sed -i 's/max_execution_time = 30/max_execution_time = 300/g' /usr/local/php/etc/php.ini
+
 
 if [ `getconf WORD_BIT` = '32' ] && [ `getconf LONG_BIT` = '64' ] ; then
         wget -c http://soft.vpser.net/web/zend/ZendOptimizer-3.3.9-linux-glibc23-x86_64.tar.gz
@@ -372,17 +360,9 @@ cd pcre-8.10/
 make && make install
 cd ../
 
-if [ `getconf WORD_BIT` = '32' ] && [ `getconf LONG_BIT` = '64' ] ; then
-        wget -c http://launchpadlibrarian.net/33469184/libpcre3_7.8-3_amd64.deb
-	dpkg -i libpcre3_7.8-3_amd64.deb
-else
-        wget -c http://launchpadlibrarian.net/33465361/libpcre3_7.8-3_i386.deb
-        dpkg -i libpcre3_7.8-3_i386.deb
-fi
-
 tar zxvf nginx-0.7.67.tar.gz
 cd nginx-0.7.67/
-./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-ipv6
+./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module
 make && make install
 cd ../
 
@@ -466,7 +446,7 @@ echo "========================== Check install ================================"
 
 echo "Install LNMP V0.6 completed! enjoy it."
 echo "========================================================================="
-echo "LNMP V0.6 for Debian VPS , Written by Licess "
+echo "LNMP V0.6 for Ubuntu VPS , Written by Licess "
 echo "========================================================================="
 echo ""
 echo "For more information please visit http://www.lnmp.org/"
