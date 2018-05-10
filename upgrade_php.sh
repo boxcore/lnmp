@@ -20,7 +20,7 @@ cur_dir=$(pwd)
 
 if [ "$1" != "--help" ]; then
 
-old_php_version=`php -r 'echo PHP_VERSION;'`
+old_php_version=`/usr/local/php/bin/php -r 'echo PHP_VERSION;'`
 #echo $old_php_version
 
 #set php version
@@ -129,7 +129,12 @@ wget -c http://soft.vpser.net/web/php/bug/php-5.2.17-max-input-vars.patch
 patch -p1 < php-5.2.17-max-input-vars.patch
 ./buildconf --force
 ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-discard-path --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-fastcgi --enable-fpm --enable-force-cgi-redirect --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --with-mime-magic
-
+if cat /etc/issue | grep -Eqi '(Debian|Ubuntu)';then
+    cd ext/openssl/
+    wget -c http://soft.vpser.net/lnmp/ext/debian_patches_disable_SSLv2_for_openssl_1_0_0.patch
+    patch -p3 <debian_patches_disable_SSLv2_for_openssl_1_0_0.patch
+    cd ../../
+fi
 make ZEND_EXTRA_LIBS='-liconv'
 make install
 
@@ -162,19 +167,12 @@ cp /etc/init.d/php-fpm /root/phpconf/php-fpm.old.bak
 rm -f /etc/init.d/php-fpm
 
 cd $cur_dir
+export PHP_AUTOCONF=/usr/local/autoconf-2.13/bin/autoconf
+export PHP_AUTOHEADER=/usr/local/autoconf-2.13/bin/autoheader
+
 echo "Starting install php......"
 tar zxvf php-$php_version.tar.gz
 cd php-$php_version/
-./buildconf --force > testbuildconf
-if grep -q "autoconf-2.13" testbuildconf; 
-then 
-export PHP_AUTOCONF=/usr/local/autoconf-2.13/bin/autoconf
-export PHP_AUTOHEADER=/usr/local/autoconf-2.13/bin/autoheader
-./buildconf --force
-else 
-echo "It looks like working.";
-cat testbuildconf
-fi
 ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --enable-fpm --with-fpm-user=www --with-fpm-group=www --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv-dir --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --with-curlwrappers --enable-mbregex --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --disable-fileinfo
 
 make ZEND_EXTRA_LIBS='-liconv'
@@ -184,25 +182,9 @@ echo "Copy new php configure file."
 mkdir -p /usr/local/php/etc
 cp php.ini-production /usr/local/php/etc/php.ini
 
-echo "Checking php extensions files......"
-if [ -s memcache-2.2.5.tgz ]; then
-  echo "memcache-2.2.5.tgz [found]"
-  else
-  echo "Error: memcache-2.2.5.tgz not found!!!download now......"
-  wget -c http://soft.vpser.net/web/memcache/memcache-2.2.5.tgz
-fi
-
-echo "Install php extensions......"
-tar zxvf memcache-2.2.5.tgz
-cd memcache-2.2.5/
-/usr/local/php/bin/phpize
-./configure --with-php-config=/usr/local/php/bin/php-config
-make && make install
-cd ../
-
+cd $cur_dir
 # php extensions
 echo "Modify php.ini......"
-sed -i 's#extension_dir = "./"#extension_dir = "/usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/"\nextension = "memcache.so"\n#' /usr/local/php/etc/php.ini
 sed -i 's/post_max_size = 8M/post_max_size = 50M/g' /usr/local/php/etc/php.ini
 sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 50M/g' /usr/local/php/etc/php.ini
 sed -i 's/;date.timezone =/date.timezone = PRC/g' /usr/local/php/etc/php.ini
@@ -213,19 +195,33 @@ sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /usr/local/php/etc/php.ini
 sed -i 's/max_execution_time = 30/max_execution_time = 300/g' /usr/local/php/etc/php.ini
 sed -i 's/register_long_arrays = On/;register_long_arrays = On/g' /usr/local/php/etc/php.ini
 sed -i 's/magic_quotes_gpc = On/;magic_quotes_gpc = On/g' /usr/local/php/etc/php.ini
-sed -i 's/disable_functions =.*/disable_functions = passthru,exec,system,chroot,scandir,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_alter,ini_restore,dl,pfsockopen,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket,fsockopen/g' /usr/local/php/etc/php.ini
+sed -i 's/disable_functions =.*/disable_functions = passthru,exec,system,chroot,scandir,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket/g' /usr/local/php/etc/php.ini
 
-echo "Install ZendGuardLoader for PHP 5.3"
+echo "Install ZendGuardLoader for PHP..."
 if [ `getconf WORD_BIT` = '32' ] && [ `getconf LONG_BIT` = '64' ] ; then
-        wget -c http://downloads.zend.com/guard/5.5.0/ZendGuardLoader-php-5.3-linux-glibc23-x86_64.tar.gz
-        tar zxvf ZendGuardLoader-php-5.3-linux-glibc23-x86_64.tar.gz
-	mkdir -p /usr/local/zend/
-	cp ZendGuardLoader-php-5.3-linux-glibc23-x86_64/php-5.3.x/ZendGuardLoader.so /usr/local/zend/
+	if [[ "$php_version" =~ "5.3." ]]; then
+		wget -c http://soft.vpser.net/web/zend/ZendGuardLoader-php-5.3-linux-glibc23-x86_64.tar.gz
+		tar zxvf ZendGuardLoader-php-5.3-linux-glibc23-x86_64.tar.gz
+		mkdir -p /usr/local/zend/
+		\cp ZendGuardLoader-php-5.3-linux-glibc23-x86_64/php-5.3.x/ZendGuardLoader.so /usr/local/zend/ 
+	elif [[ "$php_version" =~ "5.4." ]]; then
+		wget -c http://soft.vpser.net/web/zend/ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64.tar.gz
+		tar zxvf ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64.tar.gz
+		mkdir -p /usr/local/zend/
+		\cp ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64/php-5.4.x/ZendGuardLoader.so /usr/local/zend/ 
+	fi
 else
-        wget -c http://downloads.zend.com/guard/5.5.0/ZendGuardLoader-php-5.3-linux-glibc23-i386.tar.gz
-	tar zxvf ZendGuardLoader-php-5.3-linux-glibc23-i386.tar.gz
-	mkdir -p /usr/local/zend/
-	cp ZendGuardLoader-php-5.3-linux-glibc23-i386/php-5.3.x/ZendGuardLoader.so /usr/local/zend/
+	if [[ "$php_version" =~ "5.3." ]]; then
+		wget -c http://soft.vpser.net/web/zend/ZendGuardLoader-php-5.3-linux-glibc23-i386.tar.gz
+		tar zxvf ZendGuardLoader-php-5.3-linux-glibc23-i386.tar.gz
+		mkdir -p /usr/local/zend/
+		\cp ZendGuardLoader-php-5.3-linux-glibc23-i386/php-5.3.x/ZendGuardLoader.so /usr/local/zend/ 
+	elif [[ "$php_version" =~ "5.4." ]]; then
+		wget -c http://soft.vpser.net/web/zend/ZendGuardLoader-70429-PHP-5.4-linux-glibc23-i386.tar.gz
+		tar zxvf ZendGuardLoader-70429-PHP-5.4-linux-glibc23-i386.tar.gz
+		mkdir -p /usr/local/zend/
+		\cp ZendGuardLoader-70429-PHP-5.4-linux-glibc23-i386/php-5.4.x/ZendGuardLoader.so /usr/local/zend/ 
+	fi
 fi
 
 echo "Write ZendGuardLoader to php.ini......"
@@ -253,7 +249,8 @@ pm = dynamic
 pm.max_children = 20
 pm.start_servers = 2
 pm.min_spare_servers = 1
-pm.max_spare_servers = 3
+pm.max_spare_servers = 6
+request_terminate_timeout = 100
 EOF
 
 echo "Copy php-fpm init.d file......"

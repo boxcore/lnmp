@@ -9,7 +9,7 @@ if [ $(id -u) != "0" ]; then
 fi
 
 printf "=========================================================================\n"
-printf "Manager for LNMP V0.9  ,  Written by Licess \n"
+printf "Manager for LNMP V1.0  ,  Written by Licess \n"
 printf "=========================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to Manage status of lnmp \n"
@@ -32,82 +32,39 @@ MYSQLPIDFILE=/usr/local/mysql/var/$HOSTNAME.pid
 function_start()
 {
     printf "Starting LNMP...\n"
-    if [ -f $NGINXPIDFILE ]; then
-        printf "Nginx is runing!\n"
-        exit 1
-    else
-        $NGINXDAEMON -c $NGINXCONFIGFILE
-        printf "Nginx start successfully!\n"
-    fi
+    /etc/init.d/nginx start
 
-    if [ -f $PHPFPMPIDFILE ]; then
-        printf "php-fpm is runing!\n"
-    else
-	$PHPFPMDAEMON start
-	printf "PHP-FPM start successfully!\n"
-    fi
+    /etc/init.d/php-fpm start
 
-    if [ -f $MYSQLPIDFILE ]; then
-        printf "MySQL is runing!\n"
-    else
-	/etc/init.d/mysql start
-	printf "MySQL start successfully!\n"
-    fi
+    /etc/init.d/mysql start
 }
 
 function_stop()
 {
     printf "Stoping LNMP...\n"
-    if  [ -f $NGINXPIDFILE ]; then
-        kill `cat $NGINXPIDFILE`
-        printf "Nginx program is stop\n"
-    else
-        printf "Nginx program is not runing!\n" 
-    fi
+    /etc/init.d/nginx stop
 
-    if  [ -f $PHPFPMPIDFILE ]; then
-        $PHPFPMDAEMON stop
-        printf "PHP-FPM program is stop\n"
-    else
-        printf "PHP-FPM program is not runing!\n" 
-    fi
+    /etc/init.d/php-fpm stop
 
-    if  [ -f $MYSQLPIDFILE ]; then
-        /etc/init.d/mysql stop
-        printf "MySQL program is stop\n"
-    else
-        printf "MySQL program is not runing!\n" 
-    fi
+    /etc/init.d/mysql stop
 }
 
 function_reload()
 {
     printf "Reload LNMP...\n"
-    printf "Reload Nginx configure...\n"
-    $NGINXDAEMON -t
-    $NGINXDAEMON -s reload
-    printf "Nginx program is reloding!\n"
-    /etc/init.d/mysql reload
-    $PHPFPMDAEMON reload
-}
+    /etc/init.d/nginx reload
 
-function_restart()
-{
-    printf "Reload LNMP...\n"
-    printf "Reload Nginx configure...\n"
-    $NGINXDAEMON -t
-    kill `cat $NGINXPIDFILE`
-    $NGINXDAEMON -c $NGINXCONFIGFILE
-    printf "Nginx program is restarting!\n"
-    /etc/init.d/mysql restart
-    $PHPFPMDAEMON restart
+    /etc/init.d/php-fpm reload
+
+    /etc/init.d/mysql reload
 }
 
 function_kill()
 {
-    kill `cat $NGINXPIDFILE`
-    kill `cat $PHPFPMPIDFILE`
-    kill `cat $MYSQLPIDFILE`
+    killall nginx
+    killall php-cgi
+    killall php-fpm
+    killall mysqld
 }
 
 function_status()
@@ -123,6 +80,7 @@ function_status()
     else
 	printf "php-fpm is stop!\n"
     fi
+
 /etc/init.d/mysql status
 }
 

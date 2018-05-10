@@ -95,6 +95,9 @@ echo "Program will display Nginx Version......"
 /usr/local/nginx/sbin/nginx -v
 cd ../
 
+echo "Restarting Nginx..."
+/etc/init.d/nginx restart
+
 echo "Starting MySQL..."
 /etc/init.d/mysql start
 echo "Starting PHP-FPM..."

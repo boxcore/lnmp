@@ -20,7 +20,7 @@ cur_dir=$(pwd)
 
 if [ "$1" != "--help" ]; then
 
-old_php_version=`php -r 'echo PHP_VERSION;'`
+old_php_version=`/usr/local/php/bin/php -r 'echo PHP_VERSION;'`
 #echo $old_php_version
 
 #set php version
@@ -114,9 +114,9 @@ mkdir -p /usr/local/php/etc/
 rm -f /usr/local/php/etc/php.ini
 cp php.ini-production /usr/local/php/etc/php.ini
 
+cd $cur_dir
 # php extensions
 echo "Modify php.ini......"
-sed -i 's#extension_dir = "./"#extension_dir = "/usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/"\nextension = "memcache.so"\#' /usr/local/php/etc/php.ini
 sed -i 's/post_max_size = 8M/post_max_size = 50M/g' /usr/local/php/etc/php.ini
 sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 50M/g' /usr/local/php/etc/php.ini
 sed -i 's/;date.timezone =/date.timezone = PRC/g' /usr/local/php/etc/php.ini
@@ -125,19 +125,33 @@ sed -i 's/; cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /usr/local/php/etc/php.ini
 sed -i 's/max_execution_time = 30/max_execution_time = 300/g' /usr/local/php/etc/php.ini
 sed -i 's/register_long_arrays = On/;register_long_arrays = On/g' /usr/local/php/etc/php.ini
 sed -i 's/magic_quotes_gpc = On/;magic_quotes_gpc = On/g' /usr/local/php/etc/php.ini
-sed -i 's/disable_functions =.*/disable_functions = passthru,exec,system,chroot,scandir,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_alter,ini_restore,dl,pfsockopen,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket,fsockopen/g' /usr/local/php/etc/php.ini
+sed -i 's/disable_functions =.*/disable_functions = passthru,exec,system,chroot,scandir,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket/g' /usr/local/php/etc/php.ini
 
-echo "Install ZendGuardLoader for PHP 5.3"
+echo "Install ZendGuardLoader for PHP..."
 if [ `getconf WORD_BIT` = '32' ] && [ `getconf LONG_BIT` = '64' ] ; then
-        wget -c http://downloads.zend.com/guard/5.5.0/ZendGuardLoader-php-5.3-linux-glibc23-x86_64.tar.gz
-        tar zxvf ZendGuardLoader-php-5.3-linux-glibc23-x86_64.tar.gz
-	mkdir -p /usr/local/zend/
-	cp ZendGuardLoader-php-5.3-linux-glibc23-x86_64/php-5.3.x/ZendGuardLoader.so /usr/local/zend/
+	if [[ "$php_version" =~ "5.3." ]]; then
+		wget -c http://soft.vpser.net/web/zend/ZendGuardLoader-php-5.3-linux-glibc23-x86_64.tar.gz
+		tar zxvf ZendGuardLoader-php-5.3-linux-glibc23-x86_64.tar.gz
+		mkdir -p /usr/local/zend/
+		\cp ZendGuardLoader-php-5.3-linux-glibc23-x86_64/php-5.3.x/ZendGuardLoader.so /usr/local/zend/ 
+	elif [[ "$php_version" =~ "5.4." ]]; then
+		wget -c http://soft.vpser.net/web/zend/ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64.tar.gz
+		tar zxvf ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64.tar.gz
+		mkdir -p /usr/local/zend/
+		\cp ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64/php-5.4.x/ZendGuardLoader.so /usr/local/zend/ 
+	fi
 else
-        wget -c http://downloads.zend.com/guard/5.5.0/ZendGuardLoader-php-5.3-linux-glibc23-i386.tar.gz
-	tar zxvf ZendGuardLoader-php-5.3-linux-glibc23-i386.tar.gz
-	mkdir -p /usr/local/zend/
-	cp ZendGuardLoader-php-5.3-linux-glibc23-i386/php-5.3.x/ZendGuardLoader.so /usr/local/zend/
+	if [[ "$php_version" =~ "5.3." ]]; then
+		wget -c http://soft.vpser.net/web/zend/ZendGuardLoader-php-5.3-linux-glibc23-i386.tar.gz
+		tar zxvf ZendGuardLoader-php-5.3-linux-glibc23-i386.tar.gz
+		mkdir -p /usr/local/zend/
+		\cp ZendGuardLoader-php-5.3-linux-glibc23-i386/php-5.3.x/ZendGuardLoader.so /usr/local/zend/ 
+	elif [[ "$php_version" =~ "5.4." ]]; then
+		wget -c http://soft.vpser.net/web/zend/ZendGuardLoader-70429-PHP-5.4-linux-glibc23-i386.tar.gz
+		tar zxvf ZendGuardLoader-70429-PHP-5.4-linux-glibc23-i386.tar.gz
+		mkdir -p /usr/local/zend/
+		\cp ZendGuardLoader-70429-PHP-5.4-linux-glibc23-i386/php-5.4.x/ZendGuardLoader.so /usr/local/zend/ 
+	fi
 fi
 
 echo "Write ZendGuardLoader to php.ini......"
@@ -149,22 +163,6 @@ cat >>/usr/local/php/etc/php.ini<<EOF
 [Zend Optimizer] 
 zend_extension=/usr/local/zend/ZendGuardLoader.so
 EOF
-
-echo "Checking php extensions files......"
-if [ -s memcache-2.2.5.tgz ]; then
-  echo "memcache-2.2.5.tgz [found]"
-  else
-  echo "Error: memcache-2.2.5.tgz not found!!!download now......"
-  wget -c http://soft.vpser.net/web/memcache/memcache-2.2.5.tgz
-fi
-
-echo "Install php extensions......"
-tar zxvf memcache-2.2.5.tgz
-cd memcache-2.2.5/
-/usr/local/php/bin/phpize
-./configure --with-php-config=/usr/local/php/bin/php-config
-make && make install
-cd ../
 
 echo "Starting Nginx..."
 /etc/init.d/nginx start

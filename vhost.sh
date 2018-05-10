@@ -8,7 +8,7 @@ fi
 
 clear
 echo "========================================================================="
-echo "Add Virtual Host for LNMP V0.9  ,  Written by Licess "
+echo "Add Virtual Host for LNMP V1.0  ,  Written by Licess "
 echo "========================================================================="
 echo "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux "
 echo "This script is a tool to add virtual host for nginx "
@@ -166,6 +166,19 @@ server
 	}
 eof
 
+cur_php_version=`/usr/local/php/bin/php -r 'echo PHP_VERSION;'`
+
+if echo "$cur_php_version" | grep -q "5.3."
+then
+cat >>/usr/local/php/etc/php.ini<<eof
+[HOST=$domain]
+open_basedir=$vhostdir/:/tmp/
+[PATH=$vhostdir]
+open_basedir=$vhostdir/:/tmp/
+eof
+/etc/init.d/php-fpm restart
+fi
+
 echo "Test Nginx configure file......"
 /usr/local/nginx/sbin/nginx -t
 echo ""
@@ -173,7 +186,7 @@ echo "Restart Nginx......"
 /usr/local/nginx/sbin/nginx -s reload
 
 echo "========================================================================="
-echo "Add Virtual Host for LNMP V0.9  ,  Written by Licess "
+echo "Add Virtual Host for LNMP V1.0  ,  Written by Licess "
 echo "========================================================================="
 echo "For more information please visit http://www.lnmp.org/"
 echo ""

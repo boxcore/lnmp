@@ -4,7 +4,7 @@ LNMP一键安装包是什么?
 _____________________
 
 
-LNMP一键安装包是一个用Linux Shell编写的可以为CentOS/RadHat、Debian VPS(VDS)或独立主机安装LNMP(Nginx、MySQL、PHP、phpMyAdmin)生产环境的Shell程序。
+LNMP一键安装包是一个用Linux Shell编写的可以为CentOS/RadHat、Debian/Ubuntu VPS(VDS)或独立主机安装LNMP(Nginx、MySQL、PHP、phpMyAdmin)生产环境的Shell程序。
 
 LNMP官网：http://lnmp.org
 
@@ -16,18 +16,11 @@ LNMP官网：http://lnmp.org
 安装
 ____
 
-wget -c http://soft.vpser.net/lnmp/lnmp0.9.tar.gz
-tar zxvf lnmp0.9.tar.gz
-cd lnmp0.9/
+CentOS系统下执行：wget -c http://soft.vpser.net/lnmp/lnmp1.0-full.tar.gz && tar zxvf lnmp1.0-full.tar.gz && cd lnmp1.0-full && ./centos.sh
 
-CentOS/RadHat执行：
-./centos.sh
+Debian系统下执行：wget -c http://soft.vpser.net/lnmp/lnmp1.0-full.tar.gz && tar zxvf lnmp1.0-full.tar.gz && cd lnmp1.0-full && ./debian.sh
 
-Debian执行：
-./debian.sh
-
-Ubuntu执行：
-./ubuntu.sh
+Ubuntu系统下执行：wget -c http://soft.vpser.net/lnmp/lnmp1.0-full.tar.gz && tar zxvf lnmp1.0-full.tar.gz && cd lnmp1.0-full && ./ubuntu.sh
 
 LNMP升级到LNMPA，执行：
 ./apache.sh
@@ -41,10 +34,10 @@ MySQL状态管理：/etc/init.d/mysql {start|stop|restart|reload|force-reload|st
 Apache状态管理：/root/httpd {start|stop|restart|graceful|graceful-stop|configtest|status}
 
 添加虚拟主机 /root/vhost.sh
-phpinfo : http://$domain/phpinfo.php
-phpMyAdmin : http://$domain/phpmyadmin/
-探针 : http://$domain/p.php
-PureFtp用户管理：http://$domain/ftp/
+phpinfo : http://yourIP/phpinfo.php
+phpMyAdmin : http://yourIP/phpmyadmin/
+探针 : http://yourIP/p.php
+PureFtp用户管理：http://yourIP/ftp/
 
 LNMP相关目录：
 mysql :   /usr/local/mysql

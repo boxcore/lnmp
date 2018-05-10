@@ -9,7 +9,7 @@ if [ $(id -u) != "0" ]; then
 fi
 clear
 printf "=========================================================================\n"
-printf "Pureftpd for LNMP V0.9  ,  Written by Licess \n"
+printf "Pureftpd for LNMP V1.0  ,  Written by Licess \n"
 printf "=========================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install pureftpd for lnmp \n"
@@ -127,15 +127,15 @@ rm -f /tmp/script.mysql
 echo "Install GUI User manager for PureFTPd..."
 cd $cur_dir
 unzip User_manager_for-PureFTPd_v2.1_CN.zip
-mv ftp /home/wwwroot/
-chmod 777 -R /home/wwwroot/ftp/
-chown www -R /home/wwwroot/ftp/
+mv ftp /home/wwwroot/default/
+chmod 777 -R /home/wwwroot/default/ftp/
+chown www -R /home/wwwroot/default/ftp/
 
 echo "Modify parameters of GUI User manager for PureFTPd..."
-sed -i 's/English/Chinese/g' /home/wwwroot/ftp/config.php
-sed -i 's/tmppasswd/'$mysqlftppwd'/g' /home/wwwroot/ftp/config.php
-sed -i 's/myipaddress.com/localhost/g' /home/wwwroot/ftp/config.php
-mv /home/wwwroot/ftp/install.php /home/wwwroot/ftp/install.php.bak
+sed -i 's/English/Chinese/g' /home/wwwroot/default/ftp/config.php
+sed -i 's/tmppasswd/'$mysqlftppwd'/g' /home/wwwroot/default/ftp/config.php
+sed -i 's/myipaddress.com/localhost/g' /home/wwwroot/default/ftp/config.php
+mv /home/wwwroot/default/ftp/install.php /home/wwwroot/default/ftp/install.php.bak
 
 cd $cur_dir
 cp pureftpd /root/pureftpd
@@ -167,7 +167,7 @@ printf "Now you enter http://youdomain.com/ftp/ in you Web Browser to manager FT
 printf "Your password of User manager was:$ftpmanagerpwd\n"
 printf "Your password of mysql ftp user was:$mysqlftppwd\n"
 printf "=======================================================================\n"
-printf "Install Pure-FTPd for LNMP V0.9  ,  Written by Licess \n"
+printf "Install Pure-FTPd for LNMP V1.0  ,  Written by Licess \n"
 printf "=======================================================================\n"
 printf "LNMP is a tool to auto-compile & install Nginx+MySQL+PHP on Linux \n"
 printf "This script is a tool to install Pure-FTPd for lnmp \n"
